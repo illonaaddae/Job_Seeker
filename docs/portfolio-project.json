@@ -1,0 +1,43 @@
+{
+  "title": "JobSeeker, Autonomous Job Application Engine",
+  "slug": "jobseeker-autonomous-job-application-engine",
+  "category": "AI/ML",
+  "featured": true,
+  "status": "In Progress",
+  "year": "2026",
+  "timeline": "August 2026, ongoing",
+  "role": "Sole engineer, product and build",
+  "teamSize": "Solo",
+  "description": "An engine that finds live roles, scores each one against a structured profile, writes a tailored letter, sends it under strict guardrails, and reads the inbox to work out what came back.",
+  "longDescription": "JobSeeker turns a job search into a pipeline. It pulls open roles from the public APIs of Greenhouse, Lever, Ashby and Workable, scores every one against a structured profile using an explainable model, and drafts a cover letter written against that specific job description. Approved applications are sent over SMTP with a tailored CV attached, followed up twice inside the original thread, and every reply is read back over IMAP, classified, and used to update the funnel.\n\nThe engine is written in Python with no third party dependencies at all. It has its own PDF writer, its own HTTP client, its own DNS resolver for checking that an address can receive mail, and SQLite for state, so it runs identically on a laptop, in CI and inside a container. The dashboard is React and TypeScript with hand drawn SVG charts and no charting library.\n\nIt runs on Azure, behind a password, and it sends real applications on my behalf every week.",
+  "technologies": [
+    "Python",
+    "SQLite",
+    "React",
+    "TypeScript",
+    "Tailwind CSS",
+    "Vite",
+    "Claude API",
+    "Azure App Service",
+    "SMTP",
+    "IMAP",
+    "GitHub Actions"
+  ],
+  "keyFeatures": [
+    "Explainable match scoring from six named signals, with the reasoning stored beside every job so a rejection can always be explained",
+    "Letters written against the specific job description, with a deterministic fallback writer when no model is available",
+    "A style guard that strips em dashes and stock phrases, and rejects any draft that would read the same with another company name pasted in",
+    "Guardrails before every send: daily caps, a per company cooling off window, a suppression list, deliverability checks and a required human approval",
+    "Follow ups sent twice inside the original email thread, cancelled automatically the moment a human replies",
+    "Bounce detection that marks an application failed, suppresses the address and cancels its scheduled follow ups",
+    "An apply pack for roles that use a form, preparing every field and free text answer to copy, because automated form submission breaches ATS terms of service",
+    "A React dashboard covering the whole funnel, with password sign in, light and dark themes and no charting library"
+  ],
+  "challenge": "Applying for engineering roles at any volume means doing the same work repeatedly: reading a description, deciding whether it fits, rewriting the same letter, tracking what was sent and chasing what went quiet. The admin crowds out the thinking that actually matters. Automating it is easy to do badly. A system that can email strangers in your name will, if built carelessly, damage the reputation it is supposed to build.",
+  "solution": "I built the pipeline around restraint rather than volume. Scoring is explainable, so every decision can be inspected: six named signals, a stored breakdown, and hard blockers for seniority, location and technologies I do not use. Drafting and sending are separate stages with a human approval between them, and live sending is off by default and cannot be turned on by a redeploy. Everything written passes a style guard that enforces my own voice and rejects anything generic. When I wanted the system to fill in application forms automatically, I read the terms of service properly and stopped. It now prepares every answer and I submit.",
+  "results": "The engine tracks close to two thousand live roles, of which two hundred and thirty scored high enough to shortlist, and it has sent real applications with follow ups scheduled inside each thread. Scoring started at twenty nine milliseconds per job and is now four, after profiling showed sixty thousand regex scans that a substring check could reject first. Eighty one tests cover the style rules, the scoring blockers, the send guardrails, the PDF writer and bounce handling.",
+  "lessonsLearned": "The hard part was never generating text. It was deciding what the system should refuse to do.\n\nTwo moments changed the design. The first was reading the ATS terms of service and dropping automated form filling, which made the product slower and correct. The second was my first real send bouncing: an application that looks sent but never arrived is worse than one never sent, because the funnel lies to you and the follow ups chase a dead address. That became DNS verification before sending, bounce detection on the way back, and automatic suppression.\n\nThe no dependency constraint taught me the most. Writing a PDF writer and a DNS client by hand meant understanding formats I had only ever consumed through a library.",
+  "githubUrl": "https://github.com/illonaaddae/Job_Seeker",
+  "liveUrl": "",
+  "image": ""
+}

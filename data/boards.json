@@ -1,0 +1,36 @@
+{
+  "_comment": "Company handles per applicant tracking system. Add or remove freely: each one is a public job board endpoint. Find a handle by opening a company's careers page and reading the URL, for example boards.greenhouse.io/<handle> or jobs.lever.co/<handle>.",
+  "greenhouse": [
+    "moniepoint",
+    "canonical",
+    "gitlab",
+    "cloudflare",
+    "asana",
+    "duolingo",
+    "grafanalabs",
+    "figma",
+    "vercel",
+    "mozilla",
+    "elastic"
+  ],
+  "lever": [
+    "matchgroup"
+  ],
+  "ashby": [
+    "linear",
+    "ramp",
+    "posthog",
+    "supabase",
+    "railway",
+    "resend",
+    "browserbase",
+    "andela"
+  ],
+  "workable": [],
+  "notes": {
+    "how_to_add": "Run: ./run boards add <provider> <handle>. It checks the board answers before saving.",
+    "verified": "Every handle here was confirmed to return open roles. Dead handles were removed because each one costs a slow, failing request on every run.",
+    "african_focus": "moniepoint (greenhouse) and andela (ashby) hire across Africa and remotely.",
+    "remote_first": "gitlab, canonical, posthog, supabase, railway, resend and vercel are remote first."
+  }
+}

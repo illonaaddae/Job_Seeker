@@ -1,0 +1,63 @@
+name: Daily run
+
+# Discovers new roles, scores them, and drafts the best matches, every weekday
+# morning in Accra. It never sends: sending stays a decision you make in the
+# dashboard, which is the whole point of the approval step.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1-5" # 06:00 UTC, which is 06:00 in Ghana
+  workflow_dispatch:
+    inputs:
+      stages:
+        description: Stages to run, comma separated
+        default: discover,score,draft,replies,respond,digest
+        required: false
+
+# Set repository variable JOBSEEKER_URL and repository secret JOBSEEKER_API_TOKEN.
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run each stage against the deployed API
+        env:
+          BASE: ${{ vars.JOBSEEKER_URL }}
+          TOKEN: ${{ secrets.JOBSEEKER_API_TOKEN }}
+          STAGES: ${{ github.event.inputs.stages || 'discover,score,draft,replies,respond,followup,digest' }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BASE:-}" ]; then
+            echo "JOBSEEKER_URL is not set. Add it under Settings, Variables."
+            exit 1
+          fi
+          IFS=',' read -ra LIST <<< "$STAGES"
+          for stage in "${LIST[@]}"; do
+            echo "::group::$stage"
+            curl --fail --show-error --silent --max-time 900 \
+              -X POST "$BASE/api/run/$stage" \
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{}' | python3 -m json.tool
+            echo "::endgroup::"
+          done
+
+      - name: Summarise the funnel
+        env:
+          BASE: ${{ vars.JOBSEEKER_URL }}
+          TOKEN: ${{ secrets.JOBSEEKER_API_TOKEN }}
+        run: |
+          curl --fail --silent "$BASE/api/stats" -H "Authorization: Bearer $TOKEN" \
+            | python3 -c "
+import json, os, sys
+stats = json.load(sys.stdin)
+lines = [
+    '## JobSeeker funnel',
+    '',
+    f\"- Jobs tracked: {stats['jobs_total']}\",
+    f\"- Shortlisted: {stats['jobs_by_status'].get('shortlisted', 0)}\",
+    f\"- Drafts waiting for approval: {stats['applications_by_status'].get('draft', 0)}\",
+    f\"- Sent: {stats['sent']}, replies: {stats['replied']}, interviews and offers: {stats['positive']}\",
+]
+with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as handle:
+    handle.write('\n'.join(lines) + '\n')
+"

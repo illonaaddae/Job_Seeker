@@ -1,0 +1,42 @@
+{
+  "_comment": "Companies for the speculative outreach path, where an application goes to a person rather than a portal. Most hiring in Ghana never reaches a public job board, which is exactly the gap this covers. Add your own freely: only the name is required, the domain is resolved automatically.",
+
+  "ghana": [
+    {"name": "Hubtel", "domain": "hubtel.com", "industry": "fintech"},
+    {"name": "Turntabl", "domain": "turntabl.io", "industry": "software consultancy"},
+    {"name": "DreamOval", "domain": "dreamoval.com", "industry": "fintech"},
+    {"name": "theSOFTtribe", "domain": "softtribe.com", "industry": "software house"},
+    {"name": "BlueSpace Africa", "domain": "bluespaceafrica.com", "industry": "software"},
+    {"name": "iSpace Ghana", "domain": "ispacegh.com", "industry": "innovation hub"},
+    {"name": "Persol Systems", "domain": "persol.co", "industry": "software"},
+    {"name": "ExpressPay", "domain": "expresspay.africa", "industry": "payments"},
+    {"name": "The Swivel Group", "domain": "theswivelgroup.com", "industry": "software"},
+    {"name": "Nsano", "domain": "nsano.com", "industry": "fintech"},
+    {"name": "Zeepay", "domain": "myzeepay.com", "industry": "fintech"},
+    {"name": "Float", "domain": "float.africa", "industry": "fintech"},
+    {"name": "Fido", "domain": "fido.money", "industry": "fintech"},
+    {"name": "Redbird", "domain": "redbirdhealth.com", "industry": "health tech"},
+    {"name": "mPharma", "domain": "mpharma.com", "industry": "health tech"},
+    {"name": "Oze", "domain": "oze.guru", "industry": "fintech"},
+    {"name": "Farmerline", "domain": "farmerline.co", "industry": "agritech"},
+    {"name": "Complete Farmer", "domain": "completefarmer.com", "industry": "agritech"},
+    {"name": "Kudigo", "domain": "kudigo.co", "industry": "retail tech"},
+    {"name": "Rancard", "domain": "rancard.com", "industry": "software"},
+    {"name": "Esoko", "domain": "esoko.com", "industry": "agritech"},
+    {"name": "Devless", "domain": "devless.io", "industry": "software"},
+    {"name": "MEST Africa", "domain": "meltwater.org", "industry": "incubator"},
+    {"name": "Chpter", "domain": "chpter.co", "industry": "commerce"},
+    {"name": "Bezo Money", "domain": "bezomoney.com", "industry": "fintech"}
+  ],
+
+  "africa_remote": [
+    {"name": "Paystack", "domain": "paystack.com", "industry": "payments"},
+    {"name": "Flutterwave", "domain": "flutterwave.com", "industry": "payments"},
+    {"name": "Kuda", "domain": "kuda.com", "industry": "banking"},
+    {"name": "Chipper Cash", "domain": "chippercash.com", "industry": "fintech"},
+    {"name": "Wave", "domain": "wave.com", "industry": "fintech"},
+    {"name": "Yassir", "domain": "yassir.com", "industry": "super app"},
+    {"name": "Andela", "domain": "andela.com", "industry": "talent"},
+    {"name": "Eversend", "domain": "eversend.co", "industry": "fintech"}
+  ]
+}

@@ -1,0 +1,37 @@
+# Secrets and personal data
+.env
+.env.*
+!.env.example
+
+# Runtime state
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.pdf
+generated/
+
+# Your own profile, if you would rather not publish it
+# data/profile.*.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Node
+node_modules/
+dashboard/dist/
+
+# OS
+.DS_Store
+
+# The upstream project is kept locally for reference only. It contains another
+# person's contact details, which do not belong in a public repository.
+legacy/
+
+# Personal content. The example files are what the repository ships; these are
+# the real ones and stay on the machine.
+data/profile.illona.json
+data/answers.json

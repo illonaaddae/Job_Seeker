@@ -1,0 +1,33 @@
+{
+  "_comment": "Your own wording for everything this system sends. Leave a body empty to use the built in writer, which composes each message from the job description instead of a fixed shape. Placeholders in {braces} are filled in per job; an unknown one renders as nothing rather than breaking the send. Every rendered message still passes the style guard, so em dashes and stock phrases are stripped whatever you write here.",
+  "application_email": {
+    "_when": "Answering a posted role, sent to a person or a careers inbox.",
+    "subject": "{role} application, {name}",
+    "body": "{greeting}\n\nI am applying for the {role} role at {company}. {hook}\n\nI am currently a {current_role}, where I {current_detail} On your stack, I work in {skills} day to day.\n\nThe closest thing I have built is {evidence}. {evidence_summary} You can see it at {evidence_link}.\n\nIf the role is still open, I would like fifteen minutes to talk about it.\n\nBest regards,\n{signature}"
+  },
+  "speculative_email": {
+    "_when": "A cold approach to a company with no posted role.",
+    "subject": "{role} in {location}, {name}",
+    "body": "{greeting}\n\nI am writing on the chance that you are hiring, or expect to be. I am a {role_lower} in {location}, and {industry} is the kind of work I want to be close to.\n\nI am currently a {current_role}, where I {current_detail}\n\nOutside that I built {evidence}. {evidence_summary} It is at {evidence_link}.\n\nIf there is anything open at {company} that needs {skills}, I would like to be considered. If not, I would still value knowing what you look for, so I can aim at it.\n\nBest regards,\n{signature}"
+  },
+  "followup_1": {
+    "_when": "Six days after the first email, in the same thread.",
+    "subject": "",
+    "body": "Hello again,\n\nI applied for the {role} role at {company} last week and wanted to put my name back in front of you in case the thread got buried.\n\nIf it helps, my work is at {website} and I am happy to walk through anything in the application on a short call.\n\nIf the role has been filled or I am not the right fit, please say so and I will stop chasing.\n\nBest regards,\n{signature}"
+  },
+  "followup_2": {
+    "_when": "Fourteen days after the first email. The last one, always.",
+    "subject": "",
+    "body": "Hello,\n\nThis is my last note about the {role} role at {company}. I know how full an inbox gets.\n\nIf there is still interest I would welcome a conversation. If not, I would be glad to be considered for something later, and I will leave it there.\n\nBest regards,\n{signature}"
+  },
+  "reply_interested": {
+    "_when": "They replied and want to talk.",
+    "subject": "",
+    "body": "{greeting}\n\nThank you for getting back to me. I would very much like to talk about the {role} role at {company}.\n\nMy recent work is at {website} if it is useful before we speak. Let me know what you need from me next and I will send it over.\n\nBest regards,\n{signature}"
+  },
+  "reply_rejection": {
+    "_when": "They said no. Short, gracious, never an argument.",
+    "subject": "",
+    "body": "{greeting}\n\nThank you for letting me know, and for taking the time to look at my application for the {role} role at {company}.\n\nIf something opens up later that fits me better, I would be glad to be considered.\n\nBest regards,\n{signature}"
+  }
+}

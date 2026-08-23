@@ -1,0 +1,116 @@
+{
+  "_comment": "Answers to the free text questions application forms keep asking. Each one is yours to edit. Placeholders in {braces} are filled per job, exactly as in templates.json. When an Anthropic key is funded these are rewritten against the specific job description; without one, what is written here is used as it stands, so keep them true and specific.",
+  "about_yourself": {
+    "question": "Tell us about yourself.",
+    "asked_as": [
+      "about yourself",
+      "introduce yourself",
+      "tell us about you",
+      "your background",
+      "bio"
+    ],
+    "answer": ""
+  },
+  "why_this_company": {
+    "question": "Why do you want to work here?",
+    "asked_as": [
+      "why this company",
+      "why us",
+      "why do you want to join",
+      "what interests you about"
+    ],
+    "answer": ""
+  },
+  "something_you_built": {
+    "question": "Tell us about something you built that no one asked you to.",
+    "asked_as": [
+      "something you built",
+      "side project",
+      "built on your own",
+      "no one asked",
+      "personal project"
+    ],
+    "answer": ""
+  },
+  "hard_problem": {
+    "question": "Describe a hard technical problem you solved.",
+    "asked_as": [
+      "hard problem",
+      "technical challenge",
+      "difficult bug",
+      "proud of technically"
+    ],
+    "answer": ""
+  },
+  "teamwork": {
+    "question": "Tell us about working with a team, or a disagreement you handled.",
+    "asked_as": [
+      "work in a team",
+      "disagreement",
+      "conflict",
+      "collaborate",
+      "difficult colleague"
+    ],
+    "answer": ""
+  },
+  "strength_weakness": {
+    "question": "What is your greatest strength, and what are you working on?",
+    "asked_as": [
+      "strength",
+      "weakness",
+      "working on",
+      "improve",
+      "development area"
+    ],
+    "answer": ""
+  },
+  "why_looking": {
+    "question": "Why are you looking for a new role?",
+    "asked_as": [
+      "why are you looking",
+      "why leaving",
+      "why now",
+      "what are you looking for"
+    ],
+    "answer": ""
+  },
+  "what_you_want": {
+    "question": "What are you looking for in your next role?",
+    "asked_as": [
+      "what do you want",
+      "ideal role",
+      "what matters to you",
+      "career goals"
+    ],
+    "answer": ""
+  },
+  "outside_work": {
+    "question": "What do you do outside work?",
+    "asked_as": [
+      "outside work",
+      "hobbies",
+      "interests",
+      "free time",
+      "fun fact"
+    ],
+    "answer": ""
+  },
+  "salary": {
+    "question": "What are your salary expectations?",
+    "asked_as": [
+      "salary expectation",
+      "compensation expectation",
+      "desired salary"
+    ],
+    "answer": ""
+  },
+  "anything_else": {
+    "question": "Anything else you want us to know?",
+    "asked_as": [
+      "anything else",
+      "additional information",
+      "is there anything"
+    ],
+    "answer": ""
+  }
+}

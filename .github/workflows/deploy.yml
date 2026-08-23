@@ -1,0 +1,33 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Set these repository variables:  AZURE_RESOURCE_GROUP, AZURE_CONTAINER_APP, AZURE_REGISTRY
+# Set this repository secret:      AZURE_CREDENTIALS  (from: az ad sp create-for-rbac --sdk-auth)
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build the image in Azure Container Registry
+        run: |
+          az acr build \
+            --registry "${{ vars.AZURE_REGISTRY }}" \
+            --image "jobseeker:${{ github.sha }}" \
+            --image "jobseeker:latest" \
+            --file deploy/Dockerfile .
+
+      - name: Roll the container app onto the new image
+        run: |
+          az containerapp update \
+            --name "${{ vars.AZURE_CONTAINER_APP }}" \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --image "${{ vars.AZURE_REGISTRY }}.azurecr.io/jobseeker:${{ github.sha }}"

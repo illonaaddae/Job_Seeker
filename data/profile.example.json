@@ -1,0 +1,898 @@
+{
+  "identity": {
+    "full_name": "Your Name",
+    "brand": "yourbrand",
+    "headline": "Software Engineer, React and TypeScript",
+    "pronouns": "she/her",
+    "email": "you@example.com",
+    "alt_email": "",
+    "phone": "+00 00 000 0000",
+    "location": "Your City, Country",
+    "timezone": "GMT (UTC+0)",
+    "website": "https://example.com",
+    "github": "https://github.com/yourhandle",
+    "linkedin": "https://www.linkedin.com/in/yourhandle",
+    "x": "",
+    "work_authorization": "Ghanaian citizen. Available for fully remote roles worldwide and on-site roles in Accra. Open to visa sponsorship conversations.",
+    "availability": "Available from November 2026, when national service ends."
+  },
+  "targeting": {
+    "roles": [
+      "Frontend Engineer",
+      "Frontend Developer",
+      "React Developer",
+      "Software Engineer, Frontend",
+      "Full Stack Engineer",
+      "Full Stack Developer",
+      "Web Developer",
+      "UI Engineer",
+      "Product Engineer",
+      "AI Engineer",
+      "Machine Learning Engineer",
+      "Software Engineer"
+    ],
+    "seniority": [
+      "intern",
+      "graduate",
+      "junior",
+      "associate",
+      "entry",
+      "mid",
+      "i",
+      "ii"
+    ],
+    "seniority_exclude": [
+      "senior",
+      "sr.",
+      "sr ",
+      "principal",
+      "staff",
+      "director",
+      "vp",
+      "head of",
+      "lead engineer",
+      "tech lead",
+      "engineering manager",
+      "manager",
+      "architect",
+      "distinguished",
+      "fellow"
+    ],
+    "locations": [
+      "Remote",
+      "Ghana",
+      "Accra",
+      "Africa",
+      "Worldwide",
+      "EMEA",
+      "Anywhere"
+    ],
+    "remote_ok": true,
+    "onsite_countries": [
+      "Ghana"
+    ],
+    "employment_types": [
+      "full-time",
+      "contract",
+      "internship",
+      "graduate programme"
+    ],
+    "exclude_keywords": [
+      "security clearance",
+      "must be a us citizen",
+      "on-site only",
+      "unpaid",
+      "commission only",
+      "sales representative",
+      ".net",
+      "salesforce",
+      "sap abap",
+      "cobol",
+      "10+ years",
+      "8+ years"
+    ],
+    "min_score": 55,
+    "foreign_stacks": [
+      "c++",
+      "c#",
+      ".net",
+      "golang",
+      "rust",
+      "scala",
+      "ruby on rails",
+      "php",
+      "laravel",
+      "salesforce",
+      "sap",
+      "abap",
+      "cobol",
+      "android engineer",
+      "ios engineer",
+      "kotlin",
+      "swift",
+      "unity",
+      "unreal",
+      "solidity",
+      "embedded",
+      "firmware",
+      "matlab",
+      "perl",
+      "elixir"
+    ]
+  },
+  "narrative": {
+    "summary": "Software engineer building production React and TypeScript applications. At AmaliTech I am a core frontend engineer on an enterprise office management platform used across multiple offices, working in a Turborepo monorepo with TanStack Query, Zustand, full localisation and an end to end test suite. I also founded SLINT Tech, a nonprofit widening access to technology in Ghana.",
+    "positioning": "I am early in my career and deliberately deep rather than broad. I focus on React, TypeScript, and the craft of interfaces that hold up in production, with enough backend and cloud to own a feature from database to pixel.",
+    "mission": "To create a tech ecosystem where talent thrives regardless of gender, background, or circumstance.",
+    "story_line": "Raised by my mother and grandmother, I learned that strength is consistency. Technology became the language through which I could build, solve and empower, which is why I founded SLINT Tech alongside my engineering work.",
+    "differentiators": [
+      "Ships production software inside a real engineering team: an enterprise platform in a monorepo, with code review, CI, German and French localisation and Playwright end to end tests.",
+      "Best Female Student in STEM at ATU and Outstanding Student of the Year at COMPSSA, while holding a 4.30 of 5.00 GPA.",
+      "Studying BSc Applied Artificial Intelligence alongside a BTech in Computer Science and full time work.",
+      "Founded and runs SLINT Tech, mentoring new developers, which is direct evidence of ownership and follow through."
+    ],
+    "why_me_closing": "I would welcome the chance to talk about where a frontend engineer who ships carefully and learns quickly could add the most value to your team."
+  },
+  "skills": {
+    "core": [
+      {
+        "name": "React",
+        "aliases": [
+          "react.js",
+          "reactjs",
+          "react 19"
+        ],
+        "weight": 10,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "TypeScript",
+        "aliases": [
+          "ts"
+        ],
+        "weight": 10,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "JavaScript",
+        "aliases": [
+          "js",
+          "es6",
+          "ecmascript"
+        ],
+        "weight": 9,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Tailwind CSS",
+        "aliases": [
+          "tailwind",
+          "tailwindcss"
+        ],
+        "weight": 8,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "HTML",
+        "aliases": [
+          "html5",
+          "semantic html"
+        ],
+        "weight": 8,
+        "evidence": "sakama"
+      },
+      {
+        "name": "CSS",
+        "aliases": [
+          "css3",
+          "scss",
+          "sass",
+          "responsive design"
+        ],
+        "weight": 8,
+        "evidence": "sakama"
+      },
+      {
+        "name": "Next.js",
+        "aliases": [
+          "nextjs",
+          "next"
+        ],
+        "weight": 7,
+        "evidence": "slint-site"
+      },
+      {
+        "name": "Vite",
+        "aliases": [],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "REST APIs",
+        "aliases": [
+          "rest",
+          "api integration",
+          "restful"
+        ],
+        "weight": 8,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Git",
+        "aliases": [
+          "github",
+          "version control",
+          "pull requests"
+        ],
+        "weight": 8,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Accessibility",
+        "aliases": [
+          "a11y",
+          "wcag",
+          "aria"
+        ],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "UI/UX Design",
+        "aliases": [
+          "figma",
+          "ux",
+          "ui design",
+          "design systems",
+          "prototyping"
+        ],
+        "weight": 8,
+        "evidence": "google-ux"
+      },
+      {
+        "name": "Responsive Web Design",
+        "aliases": [
+          "mobile first",
+          "cross browser"
+        ],
+        "weight": 7,
+        "evidence": "sakama"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "Node.js",
+        "aliases": [
+          "node",
+          "nodejs"
+        ],
+        "weight": 7,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Python",
+        "aliases": [
+          "python3"
+        ],
+        "weight": 6,
+        "evidence": "jobseeker"
+      },
+      {
+        "name": "Serverless",
+        "aliases": [
+          "azure functions",
+          "lambda",
+          "cloud functions"
+        ],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Azure",
+        "aliases": [
+          "microsoft azure",
+          "static web apps"
+        ],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "AWS",
+        "aliases": [
+          "amazon web services",
+          "ec2",
+          "s3"
+        ],
+        "weight": 5,
+        "evidence": "aws-restart"
+      },
+      {
+        "name": "CI/CD",
+        "aliases": [
+          "github actions",
+          "continuous integration",
+          "pipelines"
+        ],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Testing",
+        "aliases": [
+          "vitest",
+          "jest",
+          "testing library",
+          "unit tests",
+          "e2e"
+        ],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "PostgreSQL",
+        "aliases": [
+          "postgres",
+          "sql"
+        ],
+        "weight": 5,
+        "evidence": "jobseeker"
+      },
+      {
+        "name": "MongoDB",
+        "aliases": [
+          "nosql"
+        ],
+        "weight": 5,
+        "evidence": "ecommerce"
+      },
+      {
+        "name": "GraphQL",
+        "aliases": [],
+        "weight": 4,
+        "evidence": ""
+      },
+      {
+        "name": "Data Visualisation",
+        "aliases": [
+          "recharts",
+          "d3",
+          "d3.js",
+          "charts"
+        ],
+        "weight": 5,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Docker",
+        "aliases": [
+          "containers",
+          "containerisation"
+        ],
+        "weight": 4,
+        "evidence": "aws-restart"
+      },
+      {
+        "name": "Web Performance",
+        "aliases": [
+          "lighthouse",
+          "core web vitals",
+          "optimisation"
+        ],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      },
+      {
+        "name": "Prompt Engineering",
+        "aliases": [
+          "llm",
+          "openai",
+          "gpt",
+          "claude",
+          "ai integration"
+        ],
+        "weight": 6,
+        "evidence": "portfolio-v2"
+      }
+    ],
+    "learning": [
+      {
+        "name": "Machine Learning",
+        "aliases": [
+          "ml",
+          "scikit-learn",
+          "tensorflow",
+          "pytorch"
+        ],
+        "weight": 3,
+        "evidence": "image-recognition"
+      },
+      {
+        "name": "Computer Vision",
+        "aliases": [
+          "opencv",
+          "image recognition"
+        ],
+        "weight": 3,
+        "evidence": "image-recognition"
+      },
+      {
+        "name": "Kubernetes",
+        "aliases": [
+          "k8s",
+          "eks"
+        ],
+        "weight": 2,
+        "evidence": ""
+      },
+      {
+        "name": "Terraform",
+        "aliases": [
+          "infrastructure as code",
+          "iac"
+        ],
+        "weight": 2,
+        "evidence": ""
+      }
+    ],
+    "soft": [
+      "Leadership",
+      "Mentoring",
+      "Technical Writing",
+      "Public Speaking",
+      "Community Building",
+      "Team Collaboration",
+      "Ownership"
+    ]
+  },
+  "experience": [
+    {
+      "id": "amalitech",
+      "role": "Software Engineer, National Service",
+      "company": "AmaliTech Ghana",
+      "period": "November 2025 to Present",
+      "location": "East Legon, Accra",
+      "bullets": [
+        "Work as a core frontend engineer on an enterprise office management platform used across multiple offices, delivering attendance, floor plan seating, user management, remote day and out of office requests in a Turborepo monorepo.",
+        "Built the interactive floor plan seating with a live availability map, seat booking flows and admin configuration of floors, zones and seats.",
+        "Delivered the manager approval workflow, an in app notifications inbox with grouping and unread badges, and the super admin user management module with role filtering and access gating.",
+        "Integrated the frontend with backend REST APIs using Axios and TanStack Query, owned the frontend to backend API contract, and used MSW to mock endpoints for local development and testing.",
+        "Added German and French localisation with CI enforced key parity validation, and wrote unit, component and end to end tests with Vitest, React Testing Library, MSW and Playwright."
+      ],
+      "keywords": [
+        "react",
+        "typescript",
+        "tanstack query",
+        "zustand",
+        "testing",
+        "playwright",
+        "vitest",
+        "localisation",
+        "monorepo",
+        "rest",
+        "code review",
+        "agile",
+        "radix",
+        "zod"
+      ],
+      "role_short": "Software Engineer at AmaliTech Ghana"
+    },
+    {
+      "id": "slint",
+      "role": "Founder & Lead",
+      "company": "SLINT Tech (Nonprofit)",
+      "period": "December 2024 to Present",
+      "location": "Remote",
+      "bullets": [
+        "Launched and scaled a nonprofit technology organisation focused on bridging the digital skills gap.",
+        "Led recruitment, training programmes and team coordination across career paths.",
+        "Built a learning culture and community support systems for junior developers."
+      ],
+      "keywords": [
+        "leadership",
+        "mentoring",
+        "community",
+        "communication",
+        "ownership",
+        "public speaking"
+      ],
+      "role_short": "Founder of SLINT Tech"
+    },
+    {
+      "id": "freelance",
+      "role": "Freelance Web Developer",
+      "company": "Independent",
+      "period": "2024 to Present",
+      "location": "Remote and Ghana",
+      "bullets": [
+        "Built, customised and maintained WordPress websites, ensuring responsive design and plugin integration.",
+        "Wrote custom CSS, HTML, JavaScript and PHP to implement tailored layouts, responsive components and interactive features beyond default theme capabilities."
+      ],
+      "keywords": [
+        "wordpress",
+        "css",
+        "html",
+        "javascript",
+        "php",
+        "client work",
+        "responsive"
+      ],
+      "role_short": "a freelance web developer"
+    },
+    {
+      "id": "cocobod",
+      "role": "IT Specialist, Intern",
+      "company": "Ghana Cocoa Board",
+      "period": "June to August 2023",
+      "location": "Accra Central, Ghana",
+      "bullets": [
+        "Supported system maintenance, user troubleshooting and technical documentation.",
+        "Worked alongside senior IT staff to improve service delivery and uptime."
+      ],
+      "keywords": [
+        "support",
+        "documentation",
+        "troubleshooting",
+        "it"
+      ],
+      "role_short": "an IT intern at Ghana Cocoa Board"
+    }
+  ],
+  "projects": [
+    {
+      "id": "oms",
+      "name": "Office Management System",
+      "url": "",
+      "summary": "An enterprise workplace platform used across multiple AmaliTech offices, covering attendance, floor plan seating, user management, remote day and out of office requests.",
+      "stack": [
+        "React 19",
+        "TypeScript",
+        "TanStack Query",
+        "Zustand",
+        "React Router v7",
+        "Radix UI",
+        "React Hook Form",
+        "Zod",
+        "Playwright",
+        "Vitest",
+        "MSW",
+        "Turborepo"
+      ],
+      "highlights": [
+        "Interactive floor plan seating with a live availability map, booking flows and admin configuration of floors, zones and seats.",
+        "German and French localisation with CI enforced key parity validation.",
+        "Unit, component and end to end tests with Vitest, React Testing Library, MSW and Playwright."
+      ],
+      "keywords": [
+        "react",
+        "typescript",
+        "enterprise",
+        "testing",
+        "localisation",
+        "state management",
+        "rest",
+        "design system",
+        "monorepo",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "portfolio-v2",
+      "name": "Oceaniccoder Portfolio v2",
+      "url": "https://oceaniccoder.dev",
+      "repo": "https://github.com/illonaaddae/Oceaniccoder-portfolio-v2",
+      "summary": "A production portfolio platform with a custom CMS admin dashboard, a client booking system wired to Google Calendar and Zoom, Paystack payments with webhook reconciliation, transactional email, and an AI assistant.",
+      "stack": [
+        "React 19",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS",
+        "Appwrite",
+        "Azure Static Web Apps",
+        "Azure Functions",
+        "TanStack Query",
+        "Vitest",
+        "GitHub Actions"
+      ],
+      "highlights": [
+        "Serverless API on Azure Functions with build-time secret injection through GitHub Actions.",
+        "CI gates on type-check, ESLint, Prettier, Vitest and Lighthouse budgets before any merge to main.",
+        "Read-only public dashboard plus session-authenticated admin routes over the same component tree."
+      ],
+      "keywords": [
+        "react",
+        "typescript",
+        "tailwind",
+        "serverless",
+        "azure",
+        "ci/cd",
+        "payments",
+        "testing",
+        "ai",
+        "cms",
+        "booking"
+      ]
+    },
+    {
+      "id": "dwali",
+      "name": "Dwali Cosmetics",
+      "url": "",
+      "summary": "A full stack web application for a cosmetics brand, handling frontend and backend, with Appwrite for database, file storage and form data.",
+      "stack": [
+        "React",
+        "Appwrite",
+        "CSS"
+      ],
+      "highlights": [
+        "Built to a client brief, translating business needs into a working product."
+      ],
+      "keywords": [
+        "react",
+        "appwrite",
+        "client work",
+        "full stack",
+        "e-commerce"
+      ]
+    },
+    {
+      "id": "jobseeker",
+      "name": "JobSeeker, autonomous application engine",
+      "repo": "https://github.com/illonaaddae/Job_Seeker",
+      "summary": "A zero-dependency Python engine that ingests live roles from Greenhouse, Lever, Ashby and Workable, scores each against a structured profile, writes tailored letters with an LLM, sends them under strict rate and consent guardrails, and tracks the funnel in a React dashboard.",
+      "stack": [
+        "Python",
+        "SQLite",
+        "React",
+        "TypeScript",
+        "Tailwind CSS",
+        "Claude API",
+        "Azure Container Apps"
+      ],
+      "highlights": [
+        "Hand-written PDF writer and HTTP client so the engine runs on the standard library alone.",
+        "Deterministic match scoring with an explainable per-signal breakdown.",
+        "IMAP reply ingestion that classifies responses and cancels scheduled follow-ups automatically."
+      ],
+      "keywords": [
+        "python",
+        "automation",
+        "llm",
+        "react",
+        "typescript",
+        "sqlite",
+        "api",
+        "cloud"
+      ]
+    },
+    {
+      "id": "wasteflow",
+      "name": "WasteFlow",
+      "url": "",
+      "summary": "A sustainable waste management platform built with a three person team as a final year project, covering collection scheduling, notifications and service selection.",
+      "stack": [
+        "React",
+        "UI design"
+      ],
+      "highlights": [
+        "Led the research writing process and coordinated the team's documentation."
+      ],
+      "keywords": [
+        "react",
+        "ui design",
+        "teamwork",
+        "research",
+        "final year project"
+      ]
+    },
+    {
+      "id": "slint-site",
+      "name": "SLINT Tech Website",
+      "summary": "High-performance site for the organisation I founded, covering programmes, applications and community resources.",
+      "stack": [
+        "React",
+        "Next.js",
+        "Tailwind CSS"
+      ],
+      "highlights": [
+        "Built and maintained alongside running the organisation itself."
+      ],
+      "keywords": [
+        "next.js",
+        "react",
+        "tailwind",
+        "performance"
+      ]
+    },
+    {
+      "id": "sakama",
+      "name": "SAKAMA Petroleum",
+      "url": "",
+      "summary": "Corporate website for a petroleum services company. A responsive marketing site with a content structure the client can maintain.",
+      "stack": [
+        "React",
+        "JavaScript",
+        "CSS"
+      ],
+      "highlights": [
+        "Mobile-first responsive layout across every breakpoint."
+      ],
+      "keywords": [
+        "react",
+        "responsive",
+        "client work",
+        "marketing site"
+      ]
+    },
+    {
+      "id": "image-recognition",
+      "name": "Image Recognition App",
+      "summary": "Computer-vision app that classifies uploaded images using a Python model service behind a React frontend.",
+      "stack": [
+        "Python",
+        "OpenCV",
+        "React"
+      ],
+      "highlights": [
+        "First end to end ML integration covering the model service, the API contract and the UI states."
+      ],
+      "keywords": [
+        "machine learning",
+        "computer vision",
+        "opencv",
+        "python",
+        "ai"
+      ]
+    },
+    {
+      "id": "ecommerce",
+      "name": "E-commerce Platform",
+      "summary": "Storefront with catalogue, cart and checkout flows backed by a Node and MongoDB API.",
+      "stack": [
+        "React",
+        "Node.js",
+        "MongoDB"
+      ],
+      "highlights": [
+        "Cart state management and order lifecycle handling."
+      ],
+      "keywords": [
+        "react",
+        "node.js",
+        "mongodb",
+        "e-commerce",
+        "state management"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "International University of Applied Sciences",
+      "credential": "BSc Applied Artificial Intelligence, 180 ECTS",
+      "period": "expected 2028",
+      "note": "Buchdorf, Germany, studied online alongside full time work."
+    },
+    {
+      "institution": "Accra Technical University",
+      "credential": "BTech Computer Science",
+      "period": "expected September 2027",
+      "note": "Cumulative GPA 4.30 of 5.00."
+    },
+    {
+      "institution": "Accra Technical University",
+      "credential": "HND Computer Science",
+      "period": "January 2023 to September 2025",
+      "note": "Cumulative GPA 4.30 of 5.00."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Google UX/UI Design Professional Certificate",
+      "issuer": "Coursera",
+      "year": "2025"
+    },
+    {
+      "name": "Full-Stack Engineer Career Path",
+      "issuer": "Codecademy",
+      "year": "2025"
+    },
+    {
+      "name": "Front-End Developer Career Path",
+      "issuer": "Scrimba",
+      "year": "2025"
+    },
+    {
+      "name": "AWS re/Start Programme",
+      "issuer": "AmaliTech",
+      "year": "2025"
+    }
+  ],
+  "documents": {
+    "cv_path": "data/Your_Name_CV.pdf",
+    "portfolio_url": "https://oceaniccoder.dev",
+    "github_url": "https://github.com/illonaaddae"
+  },
+  "outreach": {
+    "tone": "Warm, direct and specific. Confident without overclaiming. Never generic flattery, never buzzword stacking. Short sentences. British spelling.",
+    "signature_lines": [
+      "Your Name",
+      "Software Engineer",
+      "example.com | github.com/yourhandle",
+      "+00 00 000 0000"
+    ],
+    "never_claim": [
+      "senior or lead level experience",
+      "years of experience I do not have",
+      "technologies not listed in my skills",
+      "prior employment at companies I have not worked for"
+    ]
+  },
+  "style_rules": {
+    "banned_characters": [
+      "—",
+      "–",
+      "―",
+      "‒",
+      "﹘",
+      "‑"
+    ],
+    "banned_phrases": [
+      "I am excited to",
+      "I am thrilled",
+      "passionate about",
+      "leverage",
+      "delve",
+      "in today's fast-paced",
+      "seamlessly",
+      "robust solutions",
+      "cutting-edge",
+      "game-changer",
+      "synergy",
+      "best-in-class",
+      "world-class",
+      "dynamic environment",
+      "I hope this email finds you well",
+      "As an AI",
+      "It is worth noting",
+      "unlock",
+      "elevate",
+      "embark",
+      "tapestry",
+      "testament to",
+      "at the end of the day",
+      "wealth of experience",
+      "proven track record",
+      "results-driven",
+      "hit the ground running",
+      "think outside the box",
+      "team player",
+      "detail-oriented",
+      "self-starter",
+      "I believe I would be a great fit",
+      "perfect candidate",
+      "dream job",
+      "your esteemed company",
+      "esteemed organisation",
+      "kindly note"
+    ],
+    "rules": [
+      "Never use an em dash or en dash. Use a comma, a full stop, or a colon instead.",
+      "Every letter must name at least one concrete detail from the job description, and one concrete artefact from my work with a number, a technology or a link.",
+      "No sentence may be true of any other applicant. Cut anything that would survive a find and replace of the company name.",
+      "Maximum 220 words in an outreach email body. Maximum 320 words in a cover letter body.",
+      "Never open with a greeting about hoping the reader is well.",
+      "Never claim seniority, years of experience, or technologies not in my skills list.",
+      "British spelling. Plain words over corporate vocabulary."
+    ]
+  },
+  "awards": [
+    {
+      "name": "Best Female Student in STEM",
+      "issuer": "ATU SRC",
+      "year": "2023"
+    },
+    {
+      "name": "Outstanding Student of the Year",
+      "issuer": "COMPSSA",
+      "year": "2023"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Convenience wrapper: ./run discover  is the same as  python3 -m jobseeker discover
+exec python3 -m jobseeker "$@"
