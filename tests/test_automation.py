@@ -15,7 +15,8 @@ from jobseeker.outreach.responder import (
 )
 from jobseeker.persona import Persona
 
-PROFILE = "data/profile.illona.json"
+PROFILE = "data/profile.example.json"
+ANSWERS = "tests/fixtures/answers.json"
 
 
 class TestReplySafety(unittest.TestCase):
@@ -263,7 +264,7 @@ class TestFormAnswers(unittest.TestCase):
     def _answers(self):
         from jobseeker.llm.answers import build
 
-        return build(self.persona, self.job, tailor=False)
+        return build(self.persona, self.job, tailor=False, path=ANSWERS)
 
     def test_every_stored_answer_is_returned(self):
         answers = self._answers()
@@ -304,10 +305,10 @@ class TestAnswerCacheVersioning(unittest.TestCase):
         persona = Persona.load(PROFILE)
         job = Job(title="Engineer", company_name="Acme", source="t", external_id="1",
                   description="React and TypeScript.")
-        answers = build(persona, job, tailor=False)
+        answers = build(persona, job, tailor=False, path=ANSWERS)
         self.assertTrue(answers)
         for answer in answers:
-            self.assertEqual(answer["version"], bank_version())
+            self.assertEqual(answer["version"], bank_version(ANSWERS))
 
     def test_the_version_changes_when_the_bank_changes(self):
         import tempfile
@@ -325,6 +326,6 @@ class TestAnswerCacheVersioning(unittest.TestCase):
     def test_the_interview_staples_are_all_present(self):
         from jobseeker.llm.answers import load
 
-        keys = set(load())
+        keys = set(load(ANSWERS))
         for expected in ("about_yourself", "teamwork", "strength_weakness", "outside_work"):
             self.assertIn(expected, keys)

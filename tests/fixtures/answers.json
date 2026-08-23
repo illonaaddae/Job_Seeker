@@ -1,0 +1,116 @@
+{
+  "_comment": "Fixture answers for the test suite. Not anyone's real answers.",
+  "about_yourself": {
+    "question": "Tell us about yourself.",
+    "asked_as": [
+      "about yourself",
+      "introduce yourself",
+      "tell us about you",
+      "your background",
+      "bio"
+    ],
+    "answer": "I am a software engineer working mostly in React and TypeScript. I build interfaces that hold up in production, with tests and a way to tell when they break."
+  },
+  "why_this_company": {
+    "question": "Why do you want to work here?",
+    "asked_as": [
+      "why this company",
+      "why us",
+      "why do you want to join",
+      "what interests you about"
+    ],
+    "answer": "I am applying to {company} for the {role} role because {hook_plain} That is the work I want to be doing, and it is close to what I do now."
+  },
+  "something_you_built": {
+    "question": "Tell us about something you built that no one asked you to.",
+    "asked_as": [
+      "something you built",
+      "side project",
+      "built on your own",
+      "no one asked",
+      "personal project"
+    ],
+    "answer": "I built a tool nobody asked for, because the work it replaced was repetitive. The interesting part was deciding what it should refuse to do rather than what it could do."
+  },
+  "hard_problem": {
+    "question": "Describe a hard technical problem you solved.",
+    "asked_as": [
+      "hard problem",
+      "technical challenge",
+      "difficult bug",
+      "proud of technically"
+    ],
+    "answer": "The hard part was shared state. Several people could act on the same record at once, so the interface had to stay accurate without fighting the user. The server became the authority and the client kept a small, fast view of it."
+  },
+  "teamwork": {
+    "question": "Tell us about working with a team, or a disagreement you handled.",
+    "asked_as": [
+      "work in a team",
+      "disagreement",
+      "conflict",
+      "collaborate",
+      "difficult colleague"
+    ],
+    "answer": "We disagreed about where validation should live. Naming the failure mode each of us was protecting against ended the argument faster than arguing about the code."
+  },
+  "strength_weakness": {
+    "question": "What is your greatest strength, and what are you working on?",
+    "asked_as": [
+      "strength",
+      "weakness",
+      "working on",
+      "improve",
+      "development area"
+    ],
+    "answer": "My strength is finishing. What I am working on is speaking up earlier, while I am still unsure, rather than checking my reasoning twice first."
+  },
+  "why_looking": {
+    "question": "Why are you looking for a new role?",
+    "asked_as": [
+      "why are you looking",
+      "why leaving",
+      "why now",
+      "what are you looking for"
+    ],
+    "answer": "My current arrangement ends soon and I am planning the step after it. I want to keep working at the standard I have been working at."
+  },
+  "what_you_want": {
+    "question": "What are you looking for in your next role?",
+    "asked_as": [
+      "what do you want",
+      "ideal role",
+      "what matters to you",
+      "career goals"
+    ],
+    "answer": "Work I can own end to end, and people who care how it is built."
+  },
+  "outside_work": {
+    "question": "What do you do outside work?",
+    "asked_as": [
+      "outside work",
+      "hobbies",
+      "interests",
+      "free time",
+      "fun fact"
+    ],
+    "answer": "I mentor people making their first move into technology, and I build things for myself."
+  },
+  "salary": {
+    "question": "What are your salary expectations?",
+    "asked_as": [
+      "salary expectation",
+      "compensation expectation",
+      "desired salary"
+    ],
+    "answer": "I would rather understand the role fully before naming a figure."
+  },
+  "anything_else": {
+    "question": "Anything else you want us to know?",
+    "asked_as": [
+      "anything else",
+      "additional information",
+      "is there anything"
+    ],
+    "answer": "I run a small nonprofit helping people into their first technical roles."
+  }
+}

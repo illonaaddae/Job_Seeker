@@ -5,7 +5,8 @@ import unittest
 from jobseeker.persona import Persona
 from jobseeker.scoring import score_job
 
-PROFILE = "data/profile.illona.json"
+PROFILE = "data/profile.example.json"
+ANSWERS = "tests/fixtures/answers.json"
 
 FRONTEND_JD = """
 You will build and maintain customer facing interfaces in React and TypeScript.

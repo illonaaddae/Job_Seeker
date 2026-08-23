@@ -18,6 +18,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    # Without a deployed instance to talk to there is nothing to run, so this
+    # skips rather than failing every weekday morning.
+    if: vars.JOBSEEKER_URL != ''
     steps:
       - name: Run each stage against the deployed API
         env:

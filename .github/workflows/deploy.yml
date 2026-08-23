@@ -1,33 +1,72 @@
-name: Deploy to Azure Container Apps
+name: Deploy
+
+# Deploys the engine and the dashboard to Azure App Service.
+#
+# This runs only when the repository has been configured for it, so a fork or a
+# fresh clone does not sit with a permanently failing check. Set these to switch
+# it on:
+#
+#   Repository variable  AZURE_WEBAPP          the app name, for example jobseeker-abc123
+#   Repository variable  AZURE_RESOURCE_GROUP  the resource group
+#   Repository secret    AZURE_CREDENTIALS     from: az ad sp create-for-rbac --sdk-auth
+#
+# Without them the job is skipped, not failed. Deploying from a laptop with
+# deploy/appservice.sh remains perfectly valid and needs none of this.
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-# Set these repository variables:  AZURE_RESOURCE_GROUP, AZURE_CONTAINER_APP, AZURE_REGISTRY
-# Set this repository secret:      AZURE_CREDENTIALS  (from: az ad sp create-for-rbac --sdk-auth)
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # A repository that has not opted in skips this entirely.
+    if: vars.AZURE_WEBAPP != '' && vars.AZURE_RESOURCE_GROUP != ''
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Build the dashboard
+        working-directory: dashboard
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Package what the server actually needs
+        run: |
+          python3 - <<'PY'
+          import pathlib, zipfile
+
+          skip = {"__pycache__", "node_modules", ".git", ".vite"}
+
+          def include(path):
+              if any(part in skip for part in path.parts):
+                  return False
+              return path.suffix not in {".pyc", ".db", ".db-wal", ".db-shm"}
+
+          with zipfile.ZipFile("jobseeker.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
+              for source in ("jobseeker", "dashboard/dist"):
+                  for path in pathlib.Path(source).rglob("*"):
+                      if path.is_file() and include(path):
+                          bundle.write(path, path.as_posix())
+              for path in sorted(pathlib.Path("data").glob("*.json")):
+                  bundle.write(path, path.as_posix())
+          print("packaged")
+          PY
 
       - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build the image in Azure Container Registry
+      - name: Deploy
         run: |
-          az acr build \
-            --registry "${{ vars.AZURE_REGISTRY }}" \
-            --image "jobseeker:${{ github.sha }}" \
-            --image "jobseeker:latest" \
-            --file deploy/Dockerfile .
-
-      - name: Roll the container app onto the new image
-        run: |
-          az containerapp update \
-            --name "${{ vars.AZURE_CONTAINER_APP }}" \
+          az webapp deploy \
+            --name "${{ vars.AZURE_WEBAPP }}" \
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
-            --image "${{ vars.AZURE_REGISTRY }}.azurecr.io/jobseeker:${{ github.sha }}"
+            --src-path jobseeker.zip --type zip

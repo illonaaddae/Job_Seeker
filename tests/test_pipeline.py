@@ -20,7 +20,7 @@ class PipelineTestCase(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         root = Path(self.tmp.name)
         self.settings = Settings(
-            profile_path="data/profile.illona.json",
+            profile_path="data/profile.example.json",
             boards_path="data/boards.json",
             db_path=str(root / "test.db"),
             letters_dir=str(root / "letters"),
