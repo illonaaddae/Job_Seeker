@@ -1,8 +1,15 @@
 name: Daily run
 
-# Discovers new roles, scores them, and drafts the best matches, every weekday
-# morning in Accra. It never sends: sending stays a decision you make in the
-# dashboard, which is the whole point of the approval step.
+# Discovers new roles, scores them, drafts the best matches, reads the inbox and
+# emails a summary, every weekday morning in Accra. It never sends applications:
+# that stays a decision made in the dashboard, which is the whole point of the
+# approval step.
+#
+# Requires a deployed instance:
+#   Repository variable  JOBSEEKER_URL         https://your-app.azurewebsites.net
+#   Repository secret    JOBSEEKER_API_TOKEN   the API token from the deploy
+#
+# Without them this skips rather than failing every morning.
 
 on:
   schedule:
@@ -14,12 +21,9 @@ on:
         default: discover,score,draft,replies,respond,digest
         required: false
 
-# Set repository variable JOBSEEKER_URL and repository secret JOBSEEKER_API_TOKEN.
 jobs:
   run:
     runs-on: ubuntu-latest
-    # Without a deployed instance to talk to there is nothing to run, so this
-    # skips rather than failing every weekday morning.
     if: vars.JOBSEEKER_URL != ''
     steps:
       - name: Run each stage against the deployed API
@@ -29,10 +33,6 @@ jobs:
           STAGES: ${{ github.event.inputs.stages || 'discover,score,draft,replies,respond,followup,digest' }}
         run: |
           set -euo pipefail
-          if [ -z "${BASE:-}" ]; then
-            echo "JOBSEEKER_URL is not set. Add it under Settings, Variables."
-            exit 1
-          fi
           IFS=',' read -ra LIST <<< "$STAGES"
           for stage in "${LIST[@]}"; do
             echo "::group::$stage"
@@ -40,7 +40,8 @@ jobs:
               -X POST "$BASE/api/run/$stage" \
               -H "Authorization: Bearer $TOKEN" \
               -H "Content-Type: application/json" \
-              -d '{}' | python3 -m json.tool
+              -d '{}'
+            echo
             echo "::endgroup::"
           done
 
@@ -49,18 +50,24 @@ jobs:
           BASE: ${{ vars.JOBSEEKER_URL }}
           TOKEN: ${{ secrets.JOBSEEKER_API_TOKEN }}
         run: |
-          curl --fail --silent "$BASE/api/stats" -H "Authorization: Bearer $TOKEN" \
-            | python3 -c "
-import json, os, sys
-stats = json.load(sys.stdin)
-lines = [
-    '## JobSeeker funnel',
-    '',
-    f\"- Jobs tracked: {stats['jobs_total']}\",
-    f\"- Shortlisted: {stats['jobs_by_status'].get('shortlisted', 0)}\",
-    f\"- Drafts waiting for approval: {stats['applications_by_status'].get('draft', 0)}\",
-    f\"- Sent: {stats['sent']}, replies: {stats['replied']}, interviews and offers: {stats['positive']}\",
-]
-with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as handle:
-    handle.write('\n'.join(lines) + '\n')
-"
+          set -euo pipefail
+          curl --fail --silent "$BASE/api/stats" \
+            -H "Authorization: Bearer $TOKEN" > stats.json
+          python3 <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+
+          with open("stats.json", encoding="utf-8") as handle:
+              stats = json.load(handle)
+
+          by_job = stats.get("jobs_by_status", {})
+          by_application = stats.get("applications_by_status", {})
+
+          print("## JobSeeker funnel")
+          print()
+          print(f"- Roles tracked: {stats.get('jobs_total', 0)}")
+          print(f"- Shortlisted: {by_job.get('shortlisted', 0)}")
+          print(f"- Drafts waiting for approval: {by_application.get('draft', 0)}")
+          print(f"- Sent: {stats.get('sent', 0)}")
+          print(f"- Replies: {stats.get('replied', 0)}")
+          print(f"- Interviews and offers: {stats.get('positive', 0)}")
+          PY
