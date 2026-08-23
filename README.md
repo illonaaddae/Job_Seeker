@@ -8,6 +8,8 @@ Python, no dependencies · React + TypeScript dashboard · SQLite · deploys to 
 
 </div>
 
+![The dashboard, showing live roles scored against a profile](docs/dashboard.png)
+
 ---
 
 ## What it does
