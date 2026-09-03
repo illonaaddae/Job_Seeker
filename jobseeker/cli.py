@@ -215,6 +215,41 @@ def cmd_digest(pipeline: Pipeline, args: argparse.Namespace) -> Any:
     return pipeline.send_digest(dry_run=not args.live)
 
 
+def cmd_suppress(pipeline: Pipeline, args: argparse.Namespace) -> Any:
+    """Block an address or a whole domain from ever receiving an application.
+
+    Useful for the addresses a scraper should never have kept: a support inbox,
+    a press desk, or an anti-scrape trap published to catch exactly this kind
+    of tool. A trap is the expensive one, because writing to it can get the
+    sender's domain listed as a spam source and that cost lands on every later
+    application rather than just the one.
+    """
+    db = pipeline.db
+
+    if args.list or not args.pattern:
+        rows = db.suppression_rows()
+        if not rows:
+            log.info("Nothing is suppressed.")
+        for row in rows:
+            reason = f"  ({row['reason']})" if row["reason"] else ""
+            log.info(f"{row['pattern']}{reason}")
+        return None
+
+    pattern = args.pattern.strip().lower()
+    if "@" not in pattern:
+        log.error("A pattern is an address, or a domain written as @example.com")
+        return None
+
+    if args.remove:
+        removed = db.remove_suppression(pattern)
+        log.info(f"{pattern} removed" if removed else f"{pattern} was not suppressed")
+        return None
+
+    db.add_suppression(pattern, args.reason)
+    log.info(f"{pattern} suppressed. No application will be sent to it.")
+    return None
+
+
 def cmd_auto_approve(pipeline: Pipeline, args: argparse.Namespace) -> Any:
     del args
     return pipeline.auto_approve()
@@ -472,6 +507,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("auto-approve", help="approve high scoring drafts automatically")
     p.set_defaults(func=cmd_auto_approve)
+
+    p = sub.add_parser("suppress", help="never send to an address or domain")
+    p.add_argument("pattern", nargs="?", default="", help="an address, or @example.com")
+    p.add_argument("--reason", default="", help="why, for when you read this back later")
+    p.add_argument("--remove", action="store_true", help="unsuppress it instead")
+    p.add_argument("--list", action="store_true", help="show everything suppressed")
+    p.set_defaults(func=cmd_suppress)
 
     p = sub.add_parser("prospect", help="cold outreach discovery through Exa")
     p.add_argument("query")

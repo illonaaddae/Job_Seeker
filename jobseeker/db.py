@@ -670,6 +670,26 @@ class Database:
     def suppressions(self) -> list[str]:
         return [r["pattern"] for r in self.query("SELECT pattern FROM suppressions")]
 
+    def suppression_rows(self) -> list[dict[str, str]]:
+        """Every suppression with the reason it was added, newest first."""
+        return [
+            {
+                "pattern": r["pattern"],
+                "reason": r["reason"] or "",
+                "created_at": r["created_at"],
+            }
+            for r in self.query(
+                "SELECT pattern, reason, created_at FROM suppressions ORDER BY created_at DESC"
+            )
+        ]
+
+    def remove_suppression(self, pattern: str) -> bool:
+        """Drop a suppression. Returns whether there was one to drop."""
+        cursor = self.conn.execute(
+            "DELETE FROM suppressions WHERE pattern = ?", (pattern.lower().strip(),)
+        )
+        return bool(cursor.rowcount)
+
     def is_suppressed(self, email: str) -> bool:
         target = email.lower().strip()
         if not target:

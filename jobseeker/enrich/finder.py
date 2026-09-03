@@ -33,11 +33,35 @@ PREFERRED_ROLES = (
     "head of engineering", "cto", "vp engineering", "founder", "careers",
 )
 PREFERRED_LOCAL_PARTS = ("careers", "jobs", "recruitment", "talent", "hr", "people", "hello", "info", "contact")
-# Never write to these, no matter what a scraper returns.
+
+# Never write to these, no matter what a scraper returns. Matched as a
+# substring, so "no-reply-2024" is caught along with "no-reply".
 BLOCKED_LOCAL_PARTS = (
     "noreply", "no-reply", "donotreply", "postmaster", "abuse", "privacy", "legal",
     "invoice", "billing", "accounts", "payments", "security", "unsubscribe", "dmarc",
     "webmaster", "admin", "support", "helpdesk", "sales",
+)
+
+# Addresses published specifically to catch scrapers. Writing to one is worse
+# than writing to nobody: it can get the sender's domain listed as a spam
+# source, which costs every later application, not just this one.
+#
+# A real example this was built from: `antispamproofcareers@` on a company's
+# careers page. It defeated the old filter twice over, because nothing blocked
+# it and the crawler's "found a hiring inbox" check was a substring test, so
+# the "careers" inside the trap's name made it look like the best possible
+# match.
+HONEYPOT_MARKERS = (
+    "antispam", "anti-spam", "spamtrap", "spam-trap", "spamproof", "nospam",
+    "honeypot", "donotharvest", "noharvest", "donotcontact", "scrapers",
+)
+
+# Blocked only as the whole local part. These are short enough that a substring
+# rule would catch real words, and "help" is the one that let a support inbox
+# through while "helpdesk" and "support" were both already blocked.
+BLOCKED_EXACT_LOCAL_PARTS = (
+    "help", "helpline", "care", "customercare", "complaints", "refunds",
+    "press", "media", "marketing", "newsletter", "notifications", "alerts",
 )
 _EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 
@@ -55,10 +79,20 @@ def _local_part(email: str) -> str:
 
 
 def _is_sendable(email: str) -> bool:
+    """Whether an application should ever be sent to this address."""
     if not _EMAIL_RE.fullmatch(email or ""):
         return False
     local = _local_part(email)
+    if any(marker in local for marker in HONEYPOT_MARKERS):
+        return False
+    if local in BLOCKED_EXACT_LOCAL_PARTS:
+        return False
     return not any(blocked in local for blocked in BLOCKED_LOCAL_PARTS)
+
+
+def is_sendable(email: str) -> bool:
+    """Public name for the same check, for callers outside this module."""
+    return _is_sendable(email)
 
 
 def _role_score(title: str, email: str) -> int:

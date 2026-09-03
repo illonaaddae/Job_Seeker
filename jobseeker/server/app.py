@@ -106,6 +106,8 @@ class Api:
             ("POST", re.compile(r"^/api/applications/(?P<app_id>\d+)/status$"), self.set_app_status),
             ("POST", re.compile(r"^/api/run/(?P<stage>[a-z_]+)$"), self.run_stage),
             ("POST", re.compile(r"^/api/jobs/import$"), self.import_url),
+            ("GET", re.compile(r"^/api/suppressions$"), self.suppressions),
+            ("POST", re.compile(r"^/api/suppressions$"), self.set_suppression),
         ]
 
     # ----------------------------------------------------------- credentials
@@ -586,6 +588,32 @@ class Api:
 
         threading.Thread(target=worker, name=f"stage-{stage}", daemon=True).start()
         return {"stage": stage, "status": "running", "started_at": self._task["started_at"]}
+
+    def suppressions(self, **_: Any) -> dict[str, Any]:
+        """Addresses and domains no application may ever be sent to."""
+        return {"suppressions": self.db.suppression_rows()}
+
+    def set_suppression(self, body: dict[str, Any], **_: Any) -> dict[str, Any]:
+        """Add or remove one suppression.
+
+        A pattern is either a whole address or a domain written `@example.com`,
+        which is how `Db.is_suppressed` matches. Removing is a flag on the same
+        route rather than a DELETE verb, because the router only speaks GET and
+        POST.
+        """
+        pattern = str(body.get("pattern") or "").strip().lower()
+        if not pattern or ("@" not in pattern):
+            raise ApiError(
+                "pattern must be an address or a domain written as @example.com",
+                HTTPStatus.BAD_REQUEST,
+            )
+
+        if body.get("remove"):
+            removed = self.db.remove_suppression(pattern)
+            return {"ok": True, "pattern": pattern, "removed": removed}
+
+        self.db.add_suppression(pattern, str(body.get("reason") or "").strip())
+        return {"ok": True, "pattern": pattern, "added": True}
 
     def task_status(self, **_: Any) -> dict[str, Any]:
         with self._task_lock:

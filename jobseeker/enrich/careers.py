@@ -17,7 +17,7 @@ from urllib.parse import urljoin, urlparse
 from ..models import Contact
 from ..util import http, log
 from ..util.text import normalize
-from .finder import BLOCKED_LOCAL_PARTS, PREFERRED_LOCAL_PARTS, _is_sendable
+from .finder import BLOCKED_LOCAL_PARTS, PREFERRED_LOCAL_PARTS, _is_sendable, _local_part
 
 _EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 _MAILTO_RE = re.compile(r'mailto:([^"\'?>\s]+)', re.I)
@@ -102,8 +102,11 @@ def harvest_emails(domain: str, max_pages: int = 5) -> list[tuple[str, str]]:
                 continue
             found.setdefault(email, path)
 
-        if any(local in email for email in found for local in PREFERRED_LOCAL_PARTS):
-            break   # a hiring inbox was found, no need to keep crawling
+        # Compare the local part exactly. A substring test against the whole
+        # address means a trap called "antispamproofcareers@" reads as a
+        # careers inbox, and the crawl stops on the worst possible match.
+        if any(_local_part(address) in PREFERRED_LOCAL_PARTS for address in found):
+            break   # a real hiring inbox was found, no need to keep crawling
 
     return sorted(found.items(), key=lambda pair: _rank(pair[0]), reverse=True)
 
