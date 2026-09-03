@@ -41,3 +41,6 @@ awesome-design-md/
 
 # Impeccable review artifacts (screenshots from design review passes)
 .impeccable/
+
+# Playwright MCP session artifacts
+.playwright-mcp/
