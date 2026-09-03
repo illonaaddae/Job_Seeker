@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { JobsTable } from "../components/JobsTable";
-import { Pill } from "../components/Primitives";
-import { IconExternal } from "../components/Icons";
+import { Segmented } from "../components/Primitives";
+import { IconPlus } from "../components/Icons";
 import type { Job } from "../types";
 
-const FILTERS: { key: string; label: string; status?: string; minScore?: number }[] = [
-  { key: "shortlist", label: "Shortlist", minScore: 60 },
+const FILTERS: { key: string; label: string }[] = [
+  { key: "shortlist", label: "Shortlist" },
   { key: "all", label: "Everything" },
-  { key: "drafted", label: "Drafted", status: "drafted" },
-  { key: "applied", label: "Applied", status: "applied" },
-  { key: "blocked", label: "Ruled out", status: "rejected_by_me" },
+  { key: "drafted", label: "Drafted" },
+  { key: "applied", label: "Applied" },
+  { key: "blocked", label: "Ruled out" },
 ];
 
 export function Jobs({
@@ -45,50 +45,44 @@ export function Jobs({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5">
-          {FILTERS.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              onClick={() => onFilter(item.key)}
-              className="rounded-lg px-3 py-1.5 text-[13.5px] font-medium transition-colors"
-              style={{
-                background: filter === item.key ? "var(--accent)" : "var(--surface)",
-                color: filter === item.key ? "var(--accent-ink)" : "var(--muted)",
-                border: `1px solid ${filter === item.key ? "transparent" : "var(--line)"}`,
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
+        <div className="scroll-x -my-0.5 min-w-0 max-w-full py-0.5">
+          <div className="w-max">
+            <Segmented options={FILTERS} value={filter} onChange={onFilter} label="Job filter" />
+          </div>
         </div>
 
-        <form onSubmit={submit} className="flex items-center gap-2">
+        <form onSubmit={submit} className="flex min-w-0 flex-1 items-center gap-2 sm:flex-none">
           <input
             value={url}
             onChange={(event) => setUrl(event.target.value)}
             placeholder="Paste a job URL to add it"
-            className="h-9 w-[240px] rounded-xl border px-3 text-[13.5px] text-ink outline-none placeholder:text-muted"
-            style={{ borderColor: "var(--line)", background: "var(--surface)" }}
+            className="control min-w-0 flex-1 sm:w-[15rem] sm:flex-none"
+            aria-label="Job posting URL"
           />
-          <button type="submit" className="btn btn-ghost" disabled={busy || !url.trim()}>
-            <IconExternal size={14} />
+          <button type="submit" className="btn btn-secondary" disabled={busy || !url.trim()}>
+            <IconPlus size={14} />
             {busy ? "Reading" : "Add"}
           </button>
         </form>
       </div>
 
-      <div className="card overflow-hidden">
+      <div className="panel-flush">
         <div
-          className="flex items-center justify-between border-b px-5 py-3"
+          className="flex items-center justify-between border-b px-4 py-2"
           style={{ borderColor: "var(--line)" }}
         >
-          <p className="text-[13.5px] text-muted">
-            {loading ? "Loading" : `${jobs.length} role${jobs.length === 1 ? "" : "s"}`}
+          <p className="text-label text-muted">
+            {loading ? (
+              "Loading"
+            ) : (
+              <>
+                <span className="tabular font-medium text-ink-2">{jobs.length}</span>{" "}
+                {jobs.length === 1 ? "role" : "roles"}
+              </>
+            )}
           </p>
-          <Pill tone="neutral">Click a row to review it</Pill>
         </div>
         <JobsTable jobs={jobs} loading={loading} onSelect={onSelect} selectedId={selectedId} />
       </div>

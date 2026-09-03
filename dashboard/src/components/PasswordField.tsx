@@ -36,7 +36,7 @@ export function PasswordField({
 
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="eyebrow">{label}</span>
+      <span className="label">{label}</span>
       <span className="relative flex items-center">
         <input
           type={revealed ? "text" : "password"}
@@ -44,8 +44,7 @@ export function PasswordField({
           disabled={disabled}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="h-10 w-full rounded-xl border pl-3 pr-10 text-[14px] text-ink outline-none disabled:opacity-60"
-          style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
+          className="control w-full pr-9"
           value={value}
           onChange={(event) => onChange(event.target.value)}
         />
@@ -53,13 +52,14 @@ export function PasswordField({
           type="button"
           onClick={() => setRevealed((current) => !current)}
           disabled={disabled || !value}
-          className="absolute right-1.5 rounded-lg p-1.5 text-muted transition-colors hover:text-ink disabled:opacity-40"
+          className="btn btn-quiet absolute right-1"
+          style={{ minHeight: 24, padding: 3 }}
           aria-label={revealed ? "Hide password" : "Show password"}
           aria-pressed={revealed}
           title={revealed ? "Hide" : "Show"}
           tabIndex={-1}
         >
-          {revealed ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+          {revealed ? <IconEyeOff size={14} /> : <IconEye size={14} />}
         </button>
       </span>
     </label>

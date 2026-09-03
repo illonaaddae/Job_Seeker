@@ -1,8 +1,38 @@
 import { useState } from "react";
-import { Pill, SectionTitle } from "../components/Primitives";
+import { SectionTitle, Tag } from "../components/Primitives";
 import { api, getToken, setToken } from "../api";
 import { PasswordField } from "../components/PasswordField";
+import { IconAlert, IconCheck } from "../components/Icons";
 import type { Profile, SessionState, Stats } from "../types";
+
+/** A labelled list of facts. Used for identity and for the guardrails. */
+function Facts({ rows, labelWidth }: { rows: [string, string][]; labelWidth: string }) {
+  return (
+    <dl className="flex flex-col gap-2 text-[0.8125rem]">
+      {rows.map(([label, value]) => (
+        <div key={label} className="grid gap-3" style={{ gridTemplateColumns: `${labelWidth} 1fr` }}>
+          <dt className="label">{label}</dt>
+          <dd className="clip text-ink-2">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** A group of tags under a plain label. Not a kicker: it names the group. */
+function TagGroup({ label, items }: { label: string; items: string[] }) {
+  if (!items.length) return null;
+  return (
+    <div>
+      <p className="label mb-2">{label}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {items.map((item) => (
+          <Tag key={item}>{item}</Tag>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function PasswordCard({ session }: { session: SessionState | null }) {
   const [current, setCurrent] = useState("");
@@ -44,7 +74,7 @@ function PasswordCard({ session }: { session: SessionState | null }) {
   }
 
   return (
-    <section className="card p-5">
+    <section className="panel p-4">
       <SectionTitle
         title="Sign in password"
         subtitle={
@@ -56,9 +86,14 @@ function PasswordCard({ session }: { session: SessionState | null }) {
 
       {!hasPassword ? (
         <p
-          className="mb-3 rounded-lg px-3 py-2 text-[13px] leading-relaxed"
-          style={{ background: "var(--warning-soft)", color: "var(--warning)" }}
+          className="mb-3 flex items-start gap-2 rounded-[8px] border px-2.5 py-2 text-[0.8125rem] leading-relaxed"
+          style={{
+            borderColor: "color-mix(in oklab, var(--st-amber) 40%, var(--line))",
+            background: "var(--surface-2)",
+            color: "var(--ink-2)",
+          }}
         >
+          <IconAlert size={14} style={{ color: "var(--st-amber)", marginTop: 2, flexShrink: 0 }} />
           Set one now. This dashboard can send email in your name.
         </p>
       ) : null}
@@ -72,12 +107,7 @@ function PasswordCard({ session }: { session: SessionState | null }) {
           disabled={!hasPassword}
           placeholder={hasPassword ? "" : "none set"}
         />
-        <PasswordField
-          label="New"
-          value={next}
-          onChange={setNext}
-          autoComplete="new-password"
-        />
+        <PasswordField label="New" value={next} onChange={setNext} autoComplete="new-password" />
         <PasswordField
           label="Repeat new"
           value={confirm}
@@ -85,12 +115,12 @@ function PasswordCard({ session }: { session: SessionState | null }) {
           autoComplete="new-password"
         />
 
-        <div className="sm:col-span-3 flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5 sm:col-span-3">
           <button type="submit" className="btn btn-primary" disabled={busy || !next}>
             {busy ? "Saving" : hasPassword ? "Change password" : "Set password"}
           </button>
           {next ? (
-            <span className="text-[12.5px] text-muted">
+            <span className="text-label text-muted">
               {next.length < 10
                 ? `${10 - next.length} more character${10 - next.length === 1 ? "" : "s"} needed`
                 : confirm && next !== confirm
@@ -100,8 +130,8 @@ function PasswordCard({ session }: { session: SessionState | null }) {
           ) : null}
           {message ? (
             <span
-              className="text-[13px]"
-              style={{ color: message.tone === "ok" ? "var(--positive)" : "var(--danger)" }}
+              className="text-label"
+              style={{ color: message.tone === "ok" ? "var(--st-green)" : "var(--st-red)" }}
             >
               {message.text}
             </span>
@@ -109,9 +139,9 @@ function PasswordCard({ session }: { session: SessionState | null }) {
         </div>
       </form>
 
-      <p className="mt-3 text-[12.5px] leading-relaxed text-muted">
-        Only a scrypt hash is stored, never the password itself. It is kept in the database, so
-        a change here survives a restart and a redeploy without touching any configuration.
+      <p className="mt-3 max-w-[75ch] text-micro leading-relaxed text-muted">
+        Only a scrypt hash is stored, never the password itself. It is kept in the database, so a
+        change here survives a restart and a redeploy without touching any configuration.
       </p>
     </section>
   );
@@ -133,99 +163,72 @@ export function Settings({
   const identity = profile.identity;
   const targeting = profile.targeting as Record<string, string[] | number | boolean>;
 
+  const identityRows: [string, string][] = (
+    [
+      ["Name", identity.full_name],
+      ["Headline", identity.headline],
+      ["Email", identity.email],
+      ["Phone", identity.phone],
+      ["Location", identity.location],
+      ["Portfolio", identity.website],
+      ["GitHub", identity.github],
+    ] as [string, string | undefined][]
+  )
+    .filter((row): row is [string, string] => Boolean(row[1]))
+    .map(([label, value]) => [label, value]);
+
   return (
     <div className="grid gap-4 xl:grid-cols-2">
-      <section className="card p-5">
+      <section className="panel p-4">
         <SectionTitle title="Who this engine writes as" subtitle="Loaded from your profile file" />
-        <dl className="flex flex-col gap-2.5 text-[13.5px]">
-          {[
-            ["Name", identity.full_name],
-            ["Headline", identity.headline],
-            ["Email", identity.email],
-            ["Phone", identity.phone],
-            ["Location", identity.location],
-            ["Portfolio", identity.website],
-            ["GitHub", identity.github],
-          ]
-            .filter(([, value]) => Boolean(value))
-            .map(([label, value]) => (
-              <div key={label} className="grid grid-cols-[6.5rem_1fr] gap-3">
-                <dt className="text-muted">{label}</dt>
-                <dd className="truncate text-ink">{value}</dd>
-              </div>
-            ))}
-        </dl>
+        <Facts rows={identityRows} labelWidth="5.5rem" />
       </section>
 
-      <section className="card p-5">
-        <SectionTitle title="Guardrails" subtitle="Nothing sends until every one of these passes" />
-        <dl className="flex flex-col gap-2.5 text-[13.5px]">
-          {[
+      <section className="panel p-4">
+        <SectionTitle
+          title="Guardrails"
+          subtitle="Nothing sends until every one of these passes"
+        />
+        <Facts
+          labelWidth="7rem"
+          rows={[
             ["Live sending", stats?.send_enabled ? "enabled" : "disabled, dry run only"],
             ["Daily cap", `${profile.settings.daily_cap} applications`],
             ["Sent today", `${stats?.sent_today ?? 0}`],
             ["Draft threshold", `score ${profile.settings.min_score_to_draft}`],
             ["Send threshold", `score ${profile.settings.min_score_to_send}`],
             ["Writer", stats?.writer ?? profile.settings.writer],
-          ].map(([label, value]) => (
-            <div key={label} className="grid grid-cols-[7.5rem_1fr] gap-3">
-              <dt className="text-muted">{label}</dt>
-              <dd className="text-ink">{value}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-3 text-[12.5px] leading-relaxed text-muted">
+          ]}
+        />
+        <p className="mt-3 max-w-[70ch] text-micro leading-relaxed text-muted">
           Approval is always a human step. The API refuses a live send when the master switch is
           off, whatever the dashboard asks for.
         </p>
       </section>
 
-      <section className="card p-5">
+      <section className="panel flex flex-col gap-4 p-4">
         <SectionTitle title="Target roles" subtitle="What counts as a match" />
-        <div className="flex flex-wrap gap-1.5">
-          {(targeting.roles as string[] | undefined)?.map((role) => (
-            <Pill key={role} tone="accent">
-              {role}
-            </Pill>
-          ))}
-        </div>
-        <p className="mb-2 mt-4 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-          Ruled out on sight
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {(targeting.exclude_keywords as string[] | undefined)?.slice(0, 14).map((keyword) => (
-            <Pill key={keyword} tone="danger">
-              {keyword}
-            </Pill>
-          ))}
-        </div>
+        <TagGroup label="Looking for" items={(targeting.roles as string[] | undefined) ?? []} />
+        <TagGroup
+          label="Ruled out on sight"
+          items={((targeting.exclude_keywords as string[] | undefined) ?? []).slice(0, 14)}
+        />
       </section>
 
-      <section className="card p-5">
-        <SectionTitle title="Skills the scorer looks for" />
-        <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">Core</p>
-        <div className="flex flex-wrap gap-1.5">
-          {profile.skills.core.map((skill) => (
-            <Pill key={skill} tone="positive">
-              {skill}
-            </Pill>
-          ))}
-        </div>
-        <p className="mb-2 mt-4 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-          Working knowledge
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {profile.skills.secondary.map((skill) => (
-            <Pill key={skill}>{skill}</Pill>
-          ))}
-        </div>
+      <section className="panel flex flex-col gap-4 p-4">
+        <SectionTitle
+          title="Skills the scorer looks for"
+          subtitle="Core skills weigh heaviest in the match"
+        />
+        <TagGroup label="Core" items={profile.skills.core} />
+        <TagGroup label="Working knowledge" items={profile.skills.secondary} />
       </section>
 
       <div className="xl:col-span-2">
         <PasswordCard session={session} />
       </div>
 
-      <section className="card p-5 xl:col-span-2">
+      <section className="panel p-4 xl:col-span-2">
         <SectionTitle
           title="API access"
           subtitle="Required when the API is not on localhost. Stored in this browser only."
@@ -239,12 +242,12 @@ export function Settings({
               setSaved(false);
             }}
             placeholder="API token"
-            className="h-9 w-[280px] rounded-xl border px-3 text-[13.5px] text-ink outline-none"
-            style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
+            aria-label="API token"
+            className="control w-[17rem]"
           />
           <button
             type="button"
-            className="btn btn-ghost"
+            className="btn btn-secondary"
             onClick={() => {
               setToken(token);
               setSaved(true);
@@ -252,7 +255,15 @@ export function Settings({
           >
             Save
           </button>
-          {saved ? <Pill tone="positive">Saved</Pill> : null}
+          {saved ? (
+            <span
+              className="flex items-center gap-1.5 text-label"
+              style={{ color: "var(--st-green)" }}
+            >
+              <IconCheck size={13} />
+              Saved
+            </span>
+          ) : null}
         </div>
       </section>
     </div>

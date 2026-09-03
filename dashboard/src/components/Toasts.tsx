@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { IconCheck, IconClose } from "./Icons";
+import { IconAlert, IconCheck, IconClose, IconInfo } from "./Icons";
 
 export interface Toast {
   id: number;
@@ -8,11 +8,13 @@ export interface Toast {
   detail?: string;
 }
 
-const TONE: Record<Toast["tone"], { border: string; icon: string }> = {
-  info: { border: "var(--line-strong)", icon: "var(--muted)" },
-  success: { border: "var(--positive)", icon: "var(--positive)" },
-  error: { border: "var(--danger)", icon: "var(--danger)" },
-};
+/* The icon has to agree with the tone. The previous version drew a checkmark
+   on every toast, including the failures. */
+const TONE = {
+  info: { colour: "var(--st-blue)", Icon: IconInfo },
+  success: { colour: "var(--st-green)", Icon: IconCheck },
+  error: { colour: "var(--st-red)", Icon: IconAlert },
+} as const;
 
 export function Toasts({
   toasts,
@@ -30,31 +32,37 @@ export function Toasts({
   }, [toasts, onDismiss]);
 
   return (
-    <div className="pointer-events-none fixed bottom-5 right-5 z-50 flex w-[330px] flex-col gap-2">
-      {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          role="status"
-          className="card animate-slide-in pointer-events-auto flex items-start gap-2.5 p-3"
-          style={{ borderLeft: `3px solid ${TONE[toast.tone].border}`, boxShadow: "var(--shadow-lift)" }}
-        >
-          <IconCheck size={15} style={{ color: TONE[toast.tone].icon, marginTop: 2 }} />
-          <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-medium text-ink">{toast.message}</p>
-            {toast.detail ? (
-              <p className="mt-0.5 text-[12.5px] leading-relaxed text-muted">{toast.detail}</p>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            onClick={() => onDismiss(toast.id)}
-            className="rounded p-0.5 text-muted hover:text-ink"
-            aria-label="Dismiss"
+    <div
+      className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[20rem] flex-col gap-2"
+      aria-live="polite"
+    >
+      {toasts.map((toast) => {
+        const { colour, Icon } = TONE[toast.tone];
+        return (
+          <div
+            key={toast.id}
+            role="status"
+            className="pop animate-pop pointer-events-auto flex items-start gap-2.5 p-3"
           >
-            <IconClose size={14} />
-          </button>
-        </div>
-      ))}
+            <Icon size={14} style={{ color: colour, marginTop: 2, flexShrink: 0 }} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[0.8125rem] font-medium text-ink">{toast.message}</p>
+              {toast.detail ? (
+                <p className="mt-0.5 text-micro leading-relaxed text-muted">{toast.detail}</p>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => onDismiss(toast.id)}
+              className="btn btn-quiet shrink-0"
+              style={{ minHeight: 20, padding: 2 }}
+              aria-label="Dismiss"
+            >
+              <IconClose size={12} />
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }

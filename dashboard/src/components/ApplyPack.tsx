@@ -9,7 +9,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { IconCheck, IconDocument, IconExternal, IconRefresh, IconSparkle } from "./Icons";
-import { Pill, Skeleton } from "./Primitives";
+import { Skeleton, Tag } from "./Primitives";
 import type { ApplyField, ApplyPack as Pack, FormAnswer } from "../types";
 
 const GROUP_LABELS: Record<ApplyField["group"], string> = {
@@ -46,14 +46,14 @@ function CopyRow({ field }: { field: ApplyField }) {
 
   return (
     <div
-      className="flex items-start gap-2 rounded-xl border px-3 py-2.5"
+      className="flex items-start gap-2 rounded-[8px] border px-3 py-2"
       style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
     >
       <div className="min-w-0 flex-1">
-        <p className="eyebrow">{field.label}</p>
+        <p className="label">{field.label}</p>
         <p
           id={`field-${field.label}`}
-          className={`mt-1 text-[13px] leading-relaxed text-ink ${isLong ? "whitespace-pre-wrap" : "truncate"}`}
+          className={`mt-1 text-[0.8125rem] leading-relaxed text-ink ${isLong ? "whitespace-pre-wrap" : "truncate"}`}
         >
           {field.value}
         </p>
@@ -61,8 +61,7 @@ function CopyRow({ field }: { field: ApplyField }) {
       <button
         type="button"
         onClick={copy}
-        className="btn btn-ghost shrink-0"
-        style={{ height: 30, padding: "0 10px" }}
+        className="btn btn-secondary btn-sm shrink-0"
       >
         {copied ? <IconCheck size={13} /> : null}
         {copied ? "Copied" : "Copy"}
@@ -80,21 +79,20 @@ function AnswerCard({ answer }: { answer: FormAnswer }) {
 
   return (
     <div
-      className="rounded-xl border px-3.5 py-3"
+      className="rounded-[8px] border px-3 py-2.5"
       style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[13.5px] font-medium text-ink">{answer.question}</p>
-          <p className="mt-0.5 text-[11.5px] text-muted">
+          <p className="text-[0.8125rem] font-medium text-ink">{answer.question}</p>
+          <p className="mt-0.5 text-micro text-muted">
             {answer.words} words
             {answer.source === "tailored" ? ", written for this role" : ", your stored answer"}
           </p>
         </div>
         <button
           type="button"
-          className="btn btn-ghost shrink-0"
-          style={{ height: 30, padding: "0 10px" }}
+          className="btn btn-secondary btn-sm shrink-0"
           onClick={async () => {
             try {
               await navigator.clipboard.writeText(answer.answer);
@@ -110,13 +108,13 @@ function AnswerCard({ answer }: { answer: FormAnswer }) {
         </button>
       </div>
 
-      <p className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-ink-2">{preview}</p>
+      <p className="mt-2 whitespace-pre-wrap text-[0.8125rem] leading-relaxed text-ink-2">{preview}</p>
 
       {answer.answer.length > 220 ? (
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="mt-1.5 text-[12px] font-medium"
+          className="mt-1.5 text-micro font-medium"
           style={{ color: "var(--accent)" }}
         >
           {open ? "Show less" : "Show the whole answer"}
@@ -168,10 +166,10 @@ export function ApplyPack({
   return (
     <div className="flex flex-col gap-4">
       <div
-        className="rounded-xl border px-3.5 py-3"
+        className="rounded-[8px] border px-3 py-2.5"
         style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
       >
-        <p className="text-[13px] leading-relaxed text-ink-2">
+        <p className="text-[0.8125rem] leading-relaxed text-ink-2">
           This role is applied for on the company's own form, which this system deliberately does
           not fill in. Everything the form asks for is below. Open the form, paste, submit, then
           mark it done so follow ups are scheduled.
@@ -193,7 +191,7 @@ export function ApplyPack({
         {pack.documents
           .filter((document) => document.filename)
           .map((document) => (
-            <a key={document.label} href={document.url} className="btn btn-ghost" download>
+            <a key={document.label} href={document.url} className="btn btn-secondary" download>
               <IconDocument size={14} />
               {document.label}
             </a>
@@ -203,11 +201,10 @@ export function ApplyPack({
       {pack.answers.length ? (
         <section>
           <div className="mb-2 flex items-center justify-between gap-3">
-            <p className="eyebrow">The questions forms keep asking</p>
+            <p className="label">The questions forms keep asking</p>
             <button
               type="button"
-              className="btn btn-ghost"
-              style={{ height: 28, padding: "0 9px" }}
+              className="btn btn-secondary btn-sm"
               disabled={busy}
               onClick={async () => {
                 setBusy(true);
@@ -239,7 +236,7 @@ export function ApplyPack({
         if (!fields.length) return null;
         return (
           <section key={group}>
-            <p className="eyebrow mb-2">{GROUP_LABELS[group]}</p>
+            <p className="label mb-2">{GROUP_LABELS[group]}</p>
             <div className="flex flex-col gap-2">
               {fields.map((field) => (
                 <CopyRow key={field.label} field={field} />
@@ -251,10 +248,10 @@ export function ApplyPack({
 
       <div className="flex items-center gap-2.5">
         {submitted ? (
-          <Pill tone="positive">
+          <Tag tone="positive">
             <IconCheck size={12} />
             Submitted, follow ups scheduled
-          </Pill>
+          </Tag>
         ) : (
           <button
             type="button"

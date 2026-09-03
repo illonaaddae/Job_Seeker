@@ -12,12 +12,13 @@ import type { ReadinessCheck } from "../types";
 export function Readiness({ checks }: { checks: ReadinessCheck[] }) {
   if (!checks.length) return null;
   const outstanding = checks.filter((check) => !check.ready);
+
   if (!outstanding.length) {
     return (
-      <section className="card p-5">
+      <section className="panel p-4">
         <SectionTitle title="Setup" subtitle="Everything the engine needs is configured" />
-        <p className="flex items-center gap-2 text-[13.5px]" style={{ color: "var(--positive)" }}>
-          <IconCheck size={16} />
+        <p className="flex items-center gap-2 text-[0.8125rem]" style={{ color: "var(--st-green)" }}>
+          <IconCheck size={14} />
           Fully armed. Applications can be found, written and sent.
         </p>
       </section>
@@ -25,26 +26,26 @@ export function Readiness({ checks }: { checks: ReadinessCheck[] }) {
   }
 
   return (
-    <section className="card p-5">
+    <section className="panel p-4">
       <SectionTitle
         title="Setup"
         subtitle={`${outstanding.length} thing${outstanding.length === 1 ? "" : "s"} still limiting what runs without you`}
       />
-      <ul className="flex flex-col gap-3">
+      <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
         {checks.map((check) => (
-          <li key={check.key} className="flex items-start gap-3">
+          <li key={check.key} className="flex items-start gap-2.5">
             <span
-              className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+              className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
               style={{
-                background: check.ready ? "var(--positive-soft)" : "var(--warning-soft)",
-                color: check.ready ? "var(--positive)" : "var(--warning)",
+                border: `1px solid color-mix(in oklab, ${check.ready ? "var(--st-green)" : "var(--st-amber)"} 45%, var(--line))`,
+                color: check.ready ? "var(--st-green)" : "var(--st-amber)",
               }}
             >
-              {check.ready ? <IconCheck size={12} /> : <IconBolt size={11} />}
+              {check.ready ? <IconCheck size={10} /> : <IconBolt size={9} />}
             </span>
             <div className="min-w-0">
-              <p className="text-[13.5px] font-medium text-ink">{check.label}</p>
-              <p className="mt-0.5 text-[12.5px] leading-relaxed text-muted">
+              <p className="text-[0.8125rem] font-medium text-ink">{check.label}</p>
+              <p className="mt-0.5 text-micro leading-relaxed text-muted">
                 {check.ready ? check.unlocks : check.how}
               </p>
             </div>

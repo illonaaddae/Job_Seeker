@@ -177,9 +177,45 @@ export const IconSignOut = (p: IconProps) => (
   </Base>
 );
 
-export const IconLogo = ({ size = 28, ...rest }: IconProps) => (
+export const IconAlert = (p: IconProps) => (
+  <Base {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 8v4.5" />
+    <circle cx="12" cy="16" r="0.6" fill="currentColor" stroke="none" />
+  </Base>
+);
+
+export const IconInfo = (p: IconProps) => (
+  <Base {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 11.5V16" />
+    <circle cx="12" cy="8.2" r="0.6" fill="currentColor" stroke="none" />
+  </Base>
+);
+
+export const IconPlus = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M12 5.5v13M5.5 12h13" />
+  </Base>
+);
+
+export const IconChevronRight = (p: IconProps) => (
+  <Base {...p}>
+    <path d="m9.5 5.5 7 6.5-7 6.5" />
+  </Base>
+);
+
+export const IconArrowRight = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M4.5 12h15M14 6.5 19.5 12 14 17.5" />
+  </Base>
+);
+
+/* The brand mark is one of the four places the accent is spent. 8px corners,
+   matching every control in the system. */
+export const IconLogo = ({ size = 26, ...rest }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true" {...rest}>
-    <rect width="32" height="32" rx="9" fill="var(--accent)" />
+    <rect width="32" height="32" rx="8" fill="var(--accent)" />
     <path
       d="M8.5 20.5 12.5 11l3.2 6.2 2.1-3.1 5.7 6.4"
       stroke="var(--accent-ink)"

@@ -1,9 +1,9 @@
 /**
- * Charts drawn by hand in SVG.
+ * The sending rhythm chart, drawn by hand in SVG.
  *
- * A charting library would be four times the bundle for two chart types, and
- * hand drawing them means they inherit the theme variables directly and stay
- * legible in both light and dark without a second palette to maintain.
+ * A charting library would be several times the bundle for one chart type, and
+ * drawing it here means it reads the theme variables directly and stays
+ * legible in both themes with no second palette to maintain.
  */
 import { useId, useMemo, useState } from "react";
 import { shortDate } from "../lib/format";
@@ -13,22 +13,15 @@ export interface Point {
   value: number;
 }
 
-export function AreaChart({
-  points,
-  height = 132,
-  accent = "var(--accent)",
-}: {
-  points: Point[];
-  height?: number;
-  accent?: string;
-}) {
+const WIDTH = 560;
+const PADDING = { top: 12, right: 6, bottom: 20, left: 6 };
+
+export function AreaChart({ points, height = 140 }: { points: Point[]; height?: number }) {
   const gradientId = useId();
   const [hover, setHover] = useState<number | null>(null);
 
-  const width = 560;
-  const padding = { top: 10, right: 6, bottom: 20, left: 6 };
-  const innerWidth = width - padding.left - padding.right;
-  const innerHeight = height - padding.top - padding.bottom;
+  const innerWidth = WIDTH - PADDING.left - PADDING.right;
+  const innerHeight = height - PADDING.top - PADDING.bottom;
 
   const maximum = Math.max(1, ...points.map((point) => point.value));
   const step = points.length > 1 ? innerWidth / (points.length - 1) : innerWidth;
@@ -36,14 +29,14 @@ export function AreaChart({
   const coordinates = useMemo(
     () =>
       points.map((point, index) => ({
-        x: padding.left + index * step,
-        y: padding.top + innerHeight - (point.value / maximum) * innerHeight,
+        x: PADDING.left + index * step,
+        y: PADDING.top + innerHeight - (point.value / maximum) * innerHeight,
         ...point,
       })),
-    [points, step, innerHeight, maximum, padding.left, padding.top],
+    [points, step, innerHeight, maximum],
   );
 
-  // A monotone-ish cubic keeps the line calm without overshooting above zero.
+  // A monotone-ish cubic keeps the line calm without overshooting below zero.
   const path = useMemo(() => {
     if (!coordinates.length) return "";
     return coordinates
@@ -56,54 +49,52 @@ export function AreaChart({
       .join(" ");
   }, [coordinates]);
 
+  const grid = [0, 0.25, 0.5, 0.75, 1];
+
   if (!points.length) {
-    // A flat grey box says "broken". A ghosted version of the real chart says
-    // "this is where your sending rhythm will appear", which is the truth.
-    const ghost = [18, 32, 24, 46, 38, 60, 44, 72, 56, 84, 66, 92];
+    /* A flat grey box says "broken". A ghosted version of the real chart says
+       "this is where your sending rhythm will appear", which is the truth. The
+       ghost is the same shape the real chart will be, not a different one. */
     return (
       <div className="relative" style={{ height }}>
         <svg
-          viewBox="0 0 560 132"
+          viewBox={`0 0 ${WIDTH} ${height}`}
           className="w-full"
-          style={{ height, opacity: 0.5 }}
+          style={{ height }}
           aria-hidden="true"
         >
-          {[0.25, 0.5, 0.75, 1].map((fraction) => (
+          {grid.map((fraction) => (
             <line
               key={fraction}
-              x1="6"
-              x2="554"
-              y1={10 + 102 * fraction}
-              y2={10 + 102 * fraction}
+              x1={PADDING.left}
+              x2={WIDTH - PADDING.right}
+              y1={PADDING.top + innerHeight * fraction}
+              y2={PADDING.top + innerHeight * fraction}
               stroke="var(--line)"
-              strokeDasharray="3 5"
+              strokeDasharray="2 6"
               strokeWidth="1"
             />
           ))}
-          {ghost.map((value, index) => (
-            <rect
-              key={index}
-              x={14 + index * 45}
-              y={112 - value}
-              width="22"
-              height={value}
-              rx="5"
-              fill="var(--surface-3)"
-            />
-          ))}
+          <path
+            d={`M 6 ${PADDING.top + innerHeight * 0.85} C 140 ${PADDING.top + innerHeight * 0.9} 180 ${PADDING.top + innerHeight * 0.4} 300 ${PADDING.top + innerHeight * 0.5} C 420 ${PADDING.top + innerHeight * 0.6} 460 ${PADDING.top + innerHeight * 0.18} 554 ${PADDING.top + innerHeight * 0.28}`}
+            fill="none"
+            stroke="var(--surface-4)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-          <span
-            className="absolute h-20 w-72 rounded-full"
-            style={{
-              background: "var(--surface)",
-              filter: "blur(22px)",
-            }}
-            aria-hidden="true"
-          />
-          <p className="relative text-[14px] font-medium text-ink">No applications sent yet</p>
-          <p className="relative max-w-[16rem] text-center text-[12.5px] leading-relaxed text-muted">
-            Approve a draft, then run a send. This fills in one bar per day.
+          <p
+            className="rounded-[6px] px-2 py-0.5 text-sm font-medium text-ink"
+            style={{ background: "var(--surface)" }}
+          >
+            No applications sent yet
+          </p>
+          <p
+            className="max-w-[24ch] rounded-[6px] px-2 py-0.5 text-center text-micro leading-relaxed text-muted"
+            style={{ background: "var(--surface)" }}
+          >
+            Approve a draft, then run a send. This fills in one point per day.
           </p>
         </div>
       </div>
@@ -111,11 +102,12 @@ export function AreaChart({
   }
 
   const active = hover === null ? null : coordinates[hover];
+  const labelEvery = Math.max(1, Math.ceil(coordinates.length / 6));
 
   return (
     <div className="relative">
       <svg
-        viewBox={`0 0 ${width} ${height}`}
+        viewBox={`0 0 ${WIDTH} ${height}`}
         className="w-full"
         style={{ height }}
         role="img"
@@ -124,42 +116,54 @@ export function AreaChart({
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={accent} stopOpacity="0.26" />
-            <stop offset="100%" stopColor={accent} stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
           </linearGradient>
         </defs>
 
-        {[0.25, 0.5, 0.75, 1].map((fraction) => (
+        {grid.map((fraction) => (
           <line
             key={fraction}
-            x1={padding.left}
-            x2={width - padding.right}
-            y1={padding.top + innerHeight * fraction}
-            y2={padding.top + innerHeight * fraction}
+            x1={PADDING.left}
+            x2={WIDTH - PADDING.right}
+            y1={PADDING.top + innerHeight * fraction}
+            y2={PADDING.top + innerHeight * fraction}
             stroke="var(--line)"
-            strokeDasharray="3 5"
+            strokeDasharray="2 6"
             strokeWidth="1"
           />
         ))}
 
         <path
-          d={`${path} L ${coordinates[coordinates.length - 1].x} ${padding.top + innerHeight} L ${coordinates[0].x} ${padding.top + innerHeight} Z`}
+          d={`${path} L ${coordinates[coordinates.length - 1].x} ${PADDING.top + innerHeight} L ${coordinates[0].x} ${PADDING.top + innerHeight} Z`}
           fill={`url(#${gradientId})`}
         />
-        <path d={path} fill="none" stroke={accent} strokeWidth="2" strokeLinecap="round" />
+        <path
+          d={path}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+        />
 
         {active ? (
           <>
             <line
               x1={active.x}
               x2={active.x}
-              y1={padding.top}
-              y2={padding.top + innerHeight}
+              y1={PADDING.top}
+              y2={PADDING.top + innerHeight}
               stroke="var(--line-strong)"
               strokeWidth="1"
             />
-            <circle cx={active.x} cy={active.y} r="4.5" fill={accent} />
-            <circle cx={active.x} cy={active.y} r="8" fill={accent} opacity="0.18" />
+            <circle
+              cx={active.x}
+              cy={active.y}
+              r="3.5"
+              fill="var(--surface)"
+              stroke="var(--accent)"
+              strokeWidth="2"
+            />
           </>
         ) : null}
 
@@ -176,14 +180,14 @@ export function AreaChart({
         ))}
 
         {coordinates
-          .filter((_, index) => index % Math.ceil(coordinates.length / 6) === 0)
+          .filter((_, index) => index % labelEvery === 0)
           .map((point) => (
             <text
               key={`label-${point.label}`}
               x={point.x}
               y={height - 4}
               textAnchor="middle"
-              fontSize="10"
+              fontSize="9.5"
               fill="var(--muted)"
             >
               {shortDate(point.label)}
@@ -193,62 +197,15 @@ export function AreaChart({
 
       {active ? (
         <div
-          className="pointer-events-none absolute -translate-x-1/2 rounded-lg px-2 py-1 text-[12px] font-medium shadow-lg"
-          style={{
-            left: `${(active.x / width) * 100}%`,
-            top: 0,
-            background: "var(--ink)",
-            color: "var(--surface)",
-          }}
+          className="pop pointer-events-none absolute -translate-x-1/2 px-2 py-1 text-micro font-medium text-ink"
+          style={{ left: `${(active.x / WIDTH) * 100}%`, top: 0, borderRadius: 6 }}
         >
-          {active.value} on {shortDate(active.label)}
+          <span className="tabular" style={{ fontFamily: "var(--font-mono)" }}>
+            {active.value}
+          </span>{" "}
+          on {shortDate(active.label)}
         </div>
       ) : null}
     </div>
-  );
-}
-
-export function BarBreakdown({
-  points,
-  max,
-  onSelect,
-}: {
-  points: (Point & { tone?: string })[];
-  max?: number;
-  onSelect?: (label: string) => void;
-}) {
-  const maximum = max ?? Math.max(1, ...points.map((point) => point.value));
-  return (
-    <ul className="flex flex-col gap-2.5">
-      {points.map((point) => (
-        <li
-          key={point.label}
-          onClick={onSelect ? () => onSelect(point.label) : undefined}
-          className={`grid grid-cols-[7.5rem_1fr_2.2rem] items-center gap-3 rounded-lg ${
-            onSelect ? "cursor-pointer transition-opacity hover:opacity-70" : ""
-          }`}
-        >
-          <span className="truncate text-xs text-muted" title={point.label}>
-            {point.label}
-          </span>
-          <span
-            className="h-2 overflow-hidden rounded-full"
-            style={{ background: "var(--surface-3)" }}
-          >
-            <span
-              className="block h-full rounded-full"
-              style={{
-                width: `${Math.max(2, (point.value / maximum) * 100)}%`,
-                background: point.tone ?? "var(--accent)",
-                transition: "width 600ms cubic-bezier(0.2,0.7,0.3,1)",
-              }}
-            />
-          </span>
-          <span className="text-right text-xs font-semibold tabular text-ink">
-            {point.value}
-          </span>
-        </li>
-      ))}
-    </ul>
   );
 }
