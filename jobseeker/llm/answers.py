@@ -31,12 +31,26 @@ from . import user_templates
 
 DEFAULT_PATH = "data/answers.json"
 
+
+def answers_path(path: str | Path | None = None) -> Path:
+    """Where the answer bank lives.
+
+    Resolved lazily from `ANSWERS_PATH` rather than baked into a default
+    argument, because default arguments evaluate at import time and this module
+    can be imported before the env file has been read. On a deployed instance
+    this points at the persistent volume, so a redeploy cannot replace the
+    applicant's own answers with the example file.
+    """
+    if path is not None:
+        return Path(path)
+    return Path(env.get("ANSWERS_PATH", DEFAULT_PATH) or DEFAULT_PATH)
+
 # Questions that must never be answered by a machine on the applicant's behalf,
 # because a wrong answer is a lie rather than a weak sentence.
 NEVER_GENERATE = {"salary"}
 
 
-def bank_version(path: str | Path = DEFAULT_PATH) -> str:
+def bank_version(path: str | Path | None = None) -> str:
     """A fingerprint of the answer bank.
 
     Answers are cached per application so the wording does not drift between
@@ -44,7 +58,7 @@ def bank_version(path: str | Path = DEFAULT_PATH) -> str:
     never reach an application that had already been opened, which is a silent
     and very confusing failure.
     """
-    file_path = Path(path)
+    file_path = answers_path(path)
     if not file_path.exists():
         return "none"
     import hashlib
@@ -52,8 +66,8 @@ def bank_version(path: str | Path = DEFAULT_PATH) -> str:
     return hashlib.sha256(file_path.read_bytes()).hexdigest()[:12]
 
 
-def load(path: str | Path = DEFAULT_PATH) -> dict[str, dict[str, Any]]:
-    file_path = Path(path)
+def load(path: str | Path | None = None) -> dict[str, dict[str, Any]]:
+    file_path = answers_path(path)
     if not file_path.exists():
         return {}
     try:
@@ -145,7 +159,7 @@ def build(
     job: Job,
     *,
     tailor: bool = True,
-    path: str | Path = DEFAULT_PATH,
+    path: str | Path | None = None,
 ) -> list[dict[str, Any]]:
     """Return every stored answer, filled in and optionally tailored."""
     bank = load(path)

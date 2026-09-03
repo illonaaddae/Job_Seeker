@@ -86,19 +86,30 @@ function ColumnChart({ points, height }: { points: Point[]; height: number }) {
   );
 }
 
+/**
+ * Picks the honest form for the amount of data there is.
+ *
+ * A line needs at least two points to be a line. With one day of data the path
+ * came out as a single `M` command and the chart rendered as an empty box that
+ * still claimed to show a trend. Below four points the honest form is columns:
+ * one day is a quantity, not a rhythm.
+ *
+ * This dispatcher deliberately calls no hooks. The branch used to live inside
+ * the line chart, after `useId` and `useState` but before two `useMemo` calls,
+ * so the sparse path ran two hooks and the dense path ran four. React throws
+ * error #300 for that and unmounts the entire tree, which took the whole
+ * dashboard to a blank page for anyone whose data happened to be sparse.
+ */
 export function AreaChart({ points, height = 140 }: { points: Point[]; height?: number }) {
-  const gradientId = useId();
-  const [hover, setHover] = useState<number | null>(null);
-
-  /* A line needs at least two points to be a line.
-     
-     With one day of data the path came out as a single `M` command and the
-     chart rendered as an empty box that still claimed to show a trend. Below
-     four points the honest form is columns: one day is a quantity, not a
-     rhythm. */
   if (points.length > 0 && points.length < 4) {
     return <ColumnChart points={points} height={height} />;
   }
+  return <LineChart points={points} height={height} />;
+}
+
+function LineChart({ points, height }: { points: Point[]; height: number }) {
+  const gradientId = useId();
+  const [hover, setHover] = useState<number | null>(null);
 
   const innerWidth = WIDTH - PADDING.left - PADDING.right;
   const innerHeight = height - PADDING.top - PADDING.bottom;
