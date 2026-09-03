@@ -1,53 +1,76 @@
 import { IconClock, IconPulse } from "./Icons";
-import { EmptyState, Pill } from "./Primitives";
-import { relativeTime, titleCase, truncate } from "../lib/format";
+import { EmptyState, Tag, type Tone } from "./Primitives";
+import { compactTime, relativeTime, titleCase } from "../lib/format";
 import type { ActivityEvent, PendingFollowup } from "../types";
 
-const EVENT_TONE: Record<string, "neutral" | "accent" | "positive" | "warning" | "danger"> = {
+const EVENT_TONE: Record<string, Tone> = {
   discover: "neutral",
   score: "neutral",
   draft: "warning",
   send_sent: "positive",
-  send_dry_run: "accent",
+  send_dry_run: "info",
   send_blocked: "warning",
   send_failed: "danger",
 };
 
+const TONE_COLOUR: Record<Tone, string> = {
+  neutral: "var(--st-grey)",
+  accent: "var(--accent)",
+  info: "var(--st-blue)",
+  positive: "var(--st-green)",
+  warning: "var(--st-amber)",
+  danger: "var(--st-red)",
+  premium: "var(--st-violet)",
+};
+
 export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
   if (!events.length) {
-    return <EmptyState icon={<IconPulse />} title="No activity yet" hint="Every stage you run is logged here." />;
+    return (
+      <EmptyState
+        icon={<IconPulse size={16} />}
+        title="No activity yet"
+        hint="Run a stage from the button in the top bar. Everything it does is logged here."
+      />
+    );
   }
 
   return (
     <ol className="flex flex-col">
-      {events.map((event, index) => (
-        <li key={event.id} className="relative flex gap-3 pb-4 pl-1 last:pb-0">
-          {index < events.length - 1 ? (
+      {events.map((event, index) => {
+        const tone = EVENT_TONE[event.type] ?? "neutral";
+        return (
+          <li key={event.id} className="relative flex gap-3 pb-3.5 last:pb-0">
+            {index < events.length - 1 ? (
+              <span
+                className="absolute left-[3px] top-3 h-full w-px"
+                style={{ background: "var(--line)" }}
+                aria-hidden="true"
+              />
+            ) : null}
             <span
-              className="absolute left-[7px] top-4 h-full w-px"
-              style={{ background: "var(--line)" }}
+              className="relative z-10 mt-[5px] h-[7px] w-[7px] shrink-0 rounded-full"
+              style={{
+                background: TONE_COLOUR[tone],
+                // The ring hides the timeline rule behind each dot.
+                boxShadow: "0 0 0 3px var(--surface)",
+              }}
               aria-hidden="true"
             />
-          ) : null}
-          <span
-            className="relative z-10 mt-1.5 h-[7px] w-[7px] shrink-0 rounded-full ring-4"
-            style={{
-              background: "var(--accent)",
-              // The ring hides the timeline rule behind each dot.
-              boxShadow: "0 0 0 4px var(--surface)",
-            }}
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <Pill tone={EVENT_TONE[event.type] ?? "neutral"}>{titleCase(event.type)}</Pill>
-              <span className="text-[12px] text-muted">{relativeTime(event.created_at)}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-label font-medium text-ink">{titleCase(event.type)}</span>
+                <span
+                  className="tabular text-micro text-muted"
+                  title={relativeTime(event.created_at)}
+                >
+                  {compactTime(event.created_at)}
+                </span>
+              </div>
+              <p className="mt-0.5 text-[0.8125rem] leading-snug text-muted">{event.message}</p>
             </div>
-            <p className="mt-1 text-[13.5px] leading-snug text-ink-2">
-              {truncate(event.message, 110)}
-            </p>
-          </div>
-        </li>
-      ))}
+          </li>
+        );
+      })}
     </ol>
   );
 }
@@ -62,35 +85,45 @@ export function FollowupList({
   if (!followups.length) {
     return (
       <EmptyState
-        icon={<IconClock />}
+        icon={<IconClock size={16} />}
         title="Nothing scheduled"
-        hint="Follow ups are queued automatically once an application is actually sent."
+        hint="Follow ups queue themselves once an application has actually been sent."
       />
     );
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-1">
       {followups.slice(0, 6).map((followup) => (
-        <li
-          key={followup.id}
-          onClick={onSelect ? () => onSelect(followup.job_id) : undefined}
-          className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 ${
-            onSelect ? "cursor-pointer transition-colors hover:border-[var(--line-strong)]" : ""
-          }`}
-          style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
-        >
-          <span
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[12px] font-semibold"
-            style={{ background: "var(--warning-soft)", color: "var(--warning)" }}
+        <li key={followup.id}>
+          <button
+            type="button"
+            disabled={!onSelect}
+            onClick={onSelect ? () => onSelect(followup.job_id) : undefined}
+            className="row flex w-full items-center gap-2.5 rounded-[8px] px-2 py-1.5 text-left disabled:cursor-default"
           >
-            #{followup.sequence_no}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[13.5px] font-medium text-ink">{followup.company_name}</p>
-            <p className="truncate text-[12px] text-muted">{truncate(followup.title, 40)}</p>
-          </div>
-          <span className="shrink-0 text-[12px] text-muted">{relativeTime(followup.due_at)}</span>
+            <span
+              className="tabular flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] text-micro"
+              style={{
+                background: "var(--surface-2)",
+                border: "1px solid var(--line)",
+                color: "var(--st-amber)",
+                fontFamily: "var(--font-mono)",
+              }}
+              title={`Follow up number ${followup.sequence_no}`}
+            >
+              {followup.sequence_no}
+            </span>
+            <span className="min-w-0 flex-1 leading-tight">
+              <span className="clip block text-[0.8125rem] font-medium text-ink">
+                {followup.company_name}
+              </span>
+              <span className="clip block text-micro text-muted">{followup.title}</span>
+            </span>
+            <Tag bare title={relativeTime(followup.due_at)}>
+              {relativeTime(followup.due_at)}
+            </Tag>
+          </button>
         </li>
       ))}
     </ul>

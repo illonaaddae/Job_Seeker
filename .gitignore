@@ -35,3 +35,9 @@ legacy/
 # the real ones and stay on the machine.
 data/profile.illona.json
 data/answers.json
+
+# Design reference library (DESIGN.md systems used as input, not project code)
+awesome-design-md/
+
+# Impeccable review artifacts (screenshots from design review passes)
+.impeccable/

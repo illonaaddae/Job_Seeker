@@ -9,6 +9,7 @@ import { api } from "../api";
 import { relativeTime, titleCase } from "../lib/format";
 import type { Application, Contact, Job } from "../types";
 import {
+  IconAlert,
   IconCheck,
   IconClose,
   IconDocument,
@@ -16,9 +17,20 @@ import {
   IconSparkle,
 } from "./Icons";
 import { ApplyPack } from "./ApplyPack";
-import { CompanyMark, Pill, ScoreDial, Skeleton, StatusPill } from "./Primitives";
+import { CompanyMark, Meter, Score, Skeleton, StatusTag, Tag } from "./Primitives";
 
 type Tab = "match" | "draft" | "apply" | "posting";
+
+/** A titled block inside the drawer. The label names the block; there is no
+    decorative kicker above it. */
+function Block({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <p className="label mb-2">{title}</p>
+      {children}
+    </section>
+  );
+}
 
 export function JobDrawer({
   jobId,
@@ -101,214 +113,203 @@ export function JobDrawer({
     }
   }
 
+  const tabs = (
+    [
+      ["match", "Why it matched"],
+      ["draft", "Draft"],
+      ...(application?.channel === "portal" ? ([["apply", "Apply pack"]] as [Tab, string][]) : []),
+      ["posting", "Job posting"],
+    ] as [Tab, string][]
+  );
+
   return (
     <>
       <button
         type="button"
         aria-label="Close panel"
         onClick={onClose}
-        className="fixed inset-0 z-30 cursor-default"
-        style={{ background: "color-mix(in oklab, var(--ink) 28%, transparent)" }}
+        className="animate-scrim fixed inset-0 z-30 cursor-default"
+        style={{ background: "var(--scrim)" }}
       />
       <aside
-        className="animate-slide-in fixed right-0 top-0 z-40 flex h-screen w-full max-w-[620px] flex-col border-l"
-        style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+        className="animate-drawer fixed right-0 top-0 z-40 flex h-screen w-full max-w-[640px] flex-col border-l"
+        style={{
+          background: "var(--surface)",
+          borderColor: "var(--line-strong)",
+          boxShadow: "var(--shadow-pop)",
+        }}
         role="dialog"
         aria-modal="true"
         aria-label="Job detail"
       >
         {loading || !job ? (
-          <div className="flex flex-col gap-3 p-6">
-            <Skeleton className="h-12 w-2/3" />
-            <Skeleton className="h-24 w-full" />
+          <div className="flex flex-col gap-3 p-5">
+            <Skeleton className="h-10 w-2/3" />
+            <Skeleton className="h-20 w-full" />
             <Skeleton className="h-40 w-full" />
           </div>
         ) : (
           <>
             <header
-              className="flex items-start gap-3 border-b px-5 py-4"
+              className="flex items-start gap-3 border-b px-4 py-3.5"
               style={{ borderColor: "var(--line)" }}
             >
-              <CompanyMark name={job.company_name} size={42} />
+              <CompanyMark name={job.company_name} size={34} />
               <div className="min-w-0 flex-1">
-                <h2 className="text-[16.5px] font-semibold leading-tight text-ink">{job.title}</h2>
-                <p className="mt-0.5 text-[13.5px] text-muted">
+                <h2 className="text-ink">{job.title}</h2>
+                <p className="mt-0.5 text-label text-muted">
                   {job.company_name}
                   {job.location ? ` · ${job.location}` : ""}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  <StatusPill status={application?.status ?? job.status} />
-                  {job.remote ? <Pill tone="accent">Remote</Pill> : null}
-                  <Pill>{job.source}</Pill>
+                  <StatusTag status={application?.status ?? job.status} />
+                  {job.remote ? <Tag tone="info">Remote</Tag> : null}
+                  <Tag>{job.source}</Tag>
                   {relativeTime(job.posted_at) ? (
-                    <Pill>posted {relativeTime(job.posted_at)}</Pill>
+                    <Tag bare>posted {relativeTime(job.posted_at)}</Tag>
                   ) : null}
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <ScoreDial value={job.score} size={46} />
+              <div className="flex shrink-0 items-center gap-3">
+                <Score value={job.score} size="lg" />
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg p-1.5 text-muted hover:text-ink"
+                  className="btn btn-quiet"
+                  style={{ minHeight: 26, padding: 4 }}
                   aria-label="Close"
                 >
-                  <IconClose size={16} />
+                  <IconClose size={14} />
                 </button>
               </div>
             </header>
 
-            <nav
-              className="flex gap-1 border-b px-4 py-2"
-              style={{ borderColor: "var(--line)" }}
-            >
-              {(
-                [
-                  ["match", "Why it matched"],
-                  ["draft", application ? "Draft" : "Draft (none yet)"],
-                  ...(application?.channel === "portal"
-                    ? ([["apply", "Apply pack"]] as [Tab, string][])
-                    : []),
-                  ["posting", "Job posting"],
-                ] as [Tab, string][]
-              ).map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setTab(key)}
-                  className="rounded-lg px-3 py-1.5 text-[13.5px] font-medium transition-colors"
-                  style={{
-                    background: tab === key ? "var(--surface-3)" : "transparent",
-                    color: tab === key ? "var(--ink)" : "var(--muted)",
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
+            <nav className="border-b px-4 py-2" style={{ borderColor: "var(--line)" }}>
+              <div className="segmented">
+                {tabs.map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setTab(key)}
+                    aria-pressed={tab === key}
+                    className="segment"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </nav>
 
-            <div className="flex-1 overflow-y-auto px-5 py-4">
+            <div className="flex-1 overflow-y-auto px-4 py-4">
               {tab === "match" ? (
                 <div className="flex flex-col gap-5">
-                  <section>
-                    <h3 className="mb-2.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                      Score breakdown
-                    </h3>
+                  <Block title="Score breakdown">
                     <ul className="flex flex-col gap-2">
                       {signals.map(([name, value]) => (
-                        <li key={name} className="grid grid-cols-[5.5rem_1fr_2rem] items-center gap-3">
-                          <span className="text-[13px] text-muted">{titleCase(name)}</span>
+                        <li
+                          key={name}
+                          className="grid items-center gap-3"
+                          style={{ gridTemplateColumns: "6rem 1fr 2rem" }}
+                        >
+                          <span className="clip text-label text-muted">{titleCase(name)}</span>
+                          <Meter value={value} max={maxSignal} />
                           <span
-                            className="h-1.5 overflow-hidden rounded-full"
-                            style={{ background: "var(--surface-3)" }}
+                            className="tabular text-right text-label text-ink-2"
+                            style={{ fontFamily: "var(--font-mono)" }}
                           >
-                            <span
-                              className="block h-full rounded-full"
-                              style={{
-                                width: `${(value / maxSignal) * 100}%`,
-                                background: "var(--accent)",
-                              }}
-                            />
-                          </span>
-                          <span className="text-right text-[13px] font-semibold tabular text-ink">
                             {value.toFixed(0)}
                           </span>
                         </li>
                       ))}
                     </ul>
-                  </section>
+                  </Block>
 
                   {breakdown.blockers?.length ? (
-                    <section>
-                      <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                        Blocked because
-                      </h3>
+                    <Block title="Blocked because">
                       <ul className="flex flex-col gap-1.5">
                         {breakdown.blockers.map((blocker) => (
                           <li
                             key={blocker}
-                            className="rounded-lg px-2.5 py-1.5 text-[13px]"
-                            style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
+                            className="flex items-start gap-2 rounded-[8px] border px-2.5 py-1.5 text-[0.8125rem] leading-relaxed text-ink-2"
+                            style={{
+                              borderColor: "color-mix(in oklab, var(--st-red) 35%, var(--line))",
+                              background: "var(--surface-2)",
+                            }}
                           >
+                            <IconAlert
+                              size={13}
+                              style={{ color: "var(--st-red)", marginTop: 2, flexShrink: 0 }}
+                            />
                             {blocker}
                           </li>
                         ))}
                       </ul>
-                    </section>
+                    </Block>
                   ) : null}
 
                   {breakdown.reasons?.length ? (
-                    <section>
-                      <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                        Reasoning
-                      </h3>
-                      <ul className="flex flex-col gap-1">
+                    <Block title="Reasoning">
+                      <ul className="flex max-w-[70ch] flex-col gap-1.5">
                         {breakdown.reasons.map((reason) => (
-                          <li key={reason} className="text-[13.5px] leading-relaxed text-ink-2">
+                          <li
+                            key={reason}
+                            className="text-[0.8125rem] leading-relaxed text-ink-2"
+                          >
                             {reason}
                           </li>
                         ))}
                       </ul>
-                    </section>
+                    </Block>
                   ) : null}
 
                   {breakdown.matched_skills?.length ? (
-                    <section>
-                      <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                        Your skills this role asks for
-                      </h3>
+                    <Block title="Your skills this role asks for">
                       <div className="flex flex-wrap gap-1.5">
                         {breakdown.matched_skills.map((skill) => (
-                          <Pill key={skill} tone="positive">
+                          <Tag key={skill} tone="positive">
                             {skill}
-                          </Pill>
+                          </Tag>
                         ))}
                       </div>
-                    </section>
+                    </Block>
                   ) : null}
 
                   {breakdown.missing_skills?.length ? (
-                    <section>
-                      <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                        Asked for, not on your profile
-                      </h3>
+                    <Block title="Asked for, not on your profile">
                       <div className="flex flex-wrap gap-1.5">
                         {breakdown.missing_skills.map((skill) => (
-                          <Pill key={skill} tone="warning">
+                          <Tag key={skill} tone="warning">
                             {skill}
-                          </Pill>
+                          </Tag>
                         ))}
                       </div>
-                    </section>
+                    </Block>
                   ) : null}
 
                   {contacts.length ? (
-                    <section>
-                      <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                        Contacts found
-                      </h3>
+                    <Block title="Contacts found">
                       <ul className="flex flex-col gap-1.5">
                         {contacts.map((contact) => (
                           <li
                             key={contact.id}
-                            className="flex items-center justify-between rounded-lg border px-2.5 py-2"
+                            className="flex items-center justify-between gap-3 rounded-[8px] border px-2.5 py-2"
                             style={{ borderColor: "var(--line)" }}
                           >
                             <span className="min-w-0">
-                              <span className="block truncate text-[13.5px] text-ink">
+                              <span className="clip block text-[0.8125rem] text-ink">
                                 {contact.name || contact.email}
                               </span>
-                              <span className="block truncate text-[12px] text-muted">
+                              <span className="clip block text-micro text-muted">
                                 {contact.title || contact.email}
                               </span>
                             </span>
-                            <Pill tone={contact.verified ? "positive" : "neutral"}>
+                            <Tag tone={contact.verified ? "positive" : "neutral"}>
                               {contact.source}
-                            </Pill>
+                            </Tag>
                           </li>
                         ))}
                       </ul>
-                    </section>
+                    </Block>
                   ) : null}
                 </div>
               ) : null}
@@ -317,73 +318,75 @@ export function JobDrawer({
                 application ? (
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <Pill tone="accent">
-                        <IconSparkle size={11} />
+                      <Tag tone="info">
+                        <IconSparkle size={10} />
                         {application.generator}
-                      </Pill>
-                      <Pill tone={application.channel === "email" ? "positive" : "warning"}>
+                      </Tag>
+                      <Tag tone={application.channel === "email" ? "positive" : "warning"}>
                         {application.channel === "email" ? "email" : "apply on their portal"}
-                      </Pill>
-                      {application.recipient_email ? (
-                        <Pill>{application.recipient_email}</Pill>
-                      ) : null}
+                      </Tag>
+                      {application.recipient_email ? <Tag>{application.recipient_email}</Tag> : null}
                     </div>
 
                     {application.notes ? (
                       <p
-                        className="rounded-lg px-3 py-2 text-[13px]"
-                        style={{ background: "var(--warning-soft)", color: "var(--warning)" }}
+                        className="flex items-start gap-2 rounded-[8px] border px-2.5 py-2 text-[0.8125rem] leading-relaxed text-ink-2"
+                        style={{
+                          borderColor: "color-mix(in oklab, var(--st-amber) 40%, var(--line))",
+                          background: "var(--surface-2)",
+                        }}
                       >
-                        Style check: {application.notes}
+                        <IconAlert
+                          size={13}
+                          style={{ color: "var(--st-amber)", marginTop: 2, flexShrink: 0 }}
+                        />
+                        <span>
+                          <span className="font-medium text-ink">Style check:</span>{" "}
+                          {application.notes}
+                        </span>
                       </p>
                     ) : null}
 
-                    <div>
-                      <p className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                        Subject
-                      </p>
-                      <p className="text-[14.5px] font-medium text-ink">{application.subject}</p>
-                    </div>
+                    <Block title="Subject">
+                      <p className="text-body font-medium text-ink">{application.subject}</p>
+                    </Block>
 
-                    <div>
-                      <p className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
-                        Email body
-                      </p>
+                    <Block title="Email body">
                       <pre
-                        className="whitespace-pre-wrap rounded-xl border p-3.5 font-sans text-[13.5px] leading-relaxed text-ink-2"
+                        className="whitespace-pre-wrap rounded-[8px] border p-3 font-sans text-[0.8125rem] leading-relaxed text-ink-2"
                         style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
                       >
                         {application.body}
                       </pre>
-                    </div>
+                    </Block>
 
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        ["Cover letter", application.cover_letter_path],
-                        ["Tailored CV", application.cv_path],
-                      ]
-                        .filter(([, path]) => Boolean(path))
-                        .map(([label, path]) => (
-                          <span
-                            key={label}
-                            className="flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12.5px] text-muted"
-                            style={{ borderColor: "var(--line)" }}
-                            title={path}
-                          >
-                            <IconDocument size={13} />
-                            {label}
-                          </span>
-                        ))}
-                    </div>
+                    {[
+                      ["Cover letter", application.cover_letter_path],
+                      ["Tailored CV", application.cv_path],
+                    ].some(([, path]) => Boolean(path)) ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          ["Cover letter", application.cover_letter_path],
+                          ["Tailored CV", application.cv_path],
+                        ]
+                          .filter(([, path]) => Boolean(path))
+                          .map(([label, path]) => (
+                            <Tag key={label} title={path}>
+                              <IconDocument size={11} style={{ color: "var(--ink-tertiary)" }} />
+                              {label}
+                            </Tag>
+                          ))}
+                      </div>
+                    ) : null}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-start gap-3 py-8">
-                    <p className="text-[14px] text-muted">
+                  <div className="flex max-w-[52ch] flex-col items-start gap-3 py-6">
+                    <p className="text-[0.8125rem] leading-relaxed text-muted">
                       Nothing written for this role yet. Drafting produces a tailored cover letter,
                       a CV reordered for this posting, and the email that carries them.
                     </p>
                     <button type="button" className="btn btn-primary" onClick={draft} disabled={busy}>
-                      <IconSparkle size={15} />
+                      <IconSparkle size={14} />
                       Write the application
                     </button>
                   </div>
@@ -401,14 +404,14 @@ export function JobDrawer({
                       href={job.url}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="btn btn-ghost self-start"
+                      className="btn btn-secondary self-start no-underline"
                     >
-                      <IconExternal size={14} />
+                      <IconExternal size={13} />
                       Open the original posting
                     </a>
                   ) : null}
                   <pre
-                    className="whitespace-pre-wrap font-sans text-[13.5px] leading-relaxed text-ink-2"
+                    className="max-w-[75ch] whitespace-pre-wrap font-sans text-[0.8125rem] leading-relaxed text-ink-2"
                     style={{ wordBreak: "break-word" }}
                   >
                     {job.description || "This board published no description."}
@@ -418,30 +421,34 @@ export function JobDrawer({
             </div>
 
             <footer
-              className="flex items-center justify-between gap-3 border-t px-5 py-3.5"
-              style={{ borderColor: "var(--line)" }}
+              className="flex items-center justify-between gap-3 border-t px-4 py-3"
+              style={{ borderColor: "var(--line)", background: "var(--surface-2)" }}
             >
-              <span className="text-[12.5px] text-muted">
+              <span className="clip text-micro text-muted">
                 {application
                   ? `Application ${application.id} · updated ${relativeTime(application.updated_at)}`
                   : "No application yet"}
               </span>
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-2">
                 {application ? (
-                  <button type="button" className="btn btn-ghost" onClick={draft} disabled={busy}>
+                  <button type="button" className="btn btn-secondary" onClick={draft} disabled={busy}>
                     Rewrite
                   </button>
                 ) : null}
                 {application && application.status === "draft" && application.channel === "email" ? (
                   <button type="button" className="btn btn-primary" onClick={approve} disabled={busy}>
-                    <IconCheck size={15} />
+                    <IconCheck size={14} />
                     Approve for sending
                   </button>
                 ) : null}
                 {application && application.channel === "portal" && application.status !== "sent" ? (
                   <>
-                    <button type="button" className="btn btn-ghost" onClick={() => setTab("apply")}>
-                      <IconDocument size={14} />
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setTab("apply")}
+                    >
+                      <IconDocument size={13} />
                       Apply pack
                     </button>
                     <button
@@ -462,14 +469,14 @@ export function JobDrawer({
                         }
                       }}
                     >
-                      <IconCheck size={15} />
+                      <IconCheck size={14} />
                       I submitted this
                     </button>
                   </>
                 ) : null}
                 {!application ? (
                   <button type="button" className="btn btn-primary" onClick={draft} disabled={busy}>
-                    <IconSparkle size={15} />
+                    <IconSparkle size={14} />
                     Draft
                   </button>
                 ) : null}

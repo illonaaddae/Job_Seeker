@@ -27,6 +27,28 @@ function plural(count: number, unit: string): string {
   return `${count} ${unit}${count === 1 ? "" : "s"}`;
 }
 
+/**
+ * The same instant, short enough for a table cell.
+ *
+ * "14 hours ago" in a 5rem column wraps onto two lines and doubles the row
+ * height of the whole table. "14h" does not, and in a column of ages the unit
+ * letter is all the reader needs.
+ */
+export function compactTime(value: string | null | undefined): string {
+  if (!value) return "";
+  const normalised = value.endsWith("Z") || value.includes("+") ? value : `${value}Z`;
+  const then = new Date(normalised);
+  if (Number.isNaN(then.getTime())) return "";
+
+  const seconds = Math.abs(Math.round((Date.now() - then.getTime()) / 1000));
+  if (seconds < 60) return "now";
+  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
+  if (seconds < 86400) return `${Math.round(seconds / 3600)}h`;
+  if (seconds < 604800) return `${Math.round(seconds / 86400)}d`;
+  if (seconds < 2629800) return `${Math.round(seconds / 604800)}w`;
+  return `${Math.round(seconds / 2629800)}mo`;
+}
+
 export function shortDate(value: string | null | undefined): string {
   if (!value) return "";
   const date = new Date(value.length <= 10 ? `${value}T00:00:00Z` : value);
