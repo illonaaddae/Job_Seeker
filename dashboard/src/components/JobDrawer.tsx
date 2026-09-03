@@ -13,6 +13,7 @@ import {
   IconCheck,
   IconClose,
   IconDocument,
+  IconDownload,
   IconExternal,
   IconSparkle,
 } from "./Icons";
@@ -77,6 +78,19 @@ export function JobDrawer({
   }, [onClose]);
 
   if (!jobId) return null;
+
+  /* The drafting stage writes a cover letter and a CV to disk and the API
+     serves each as a PDF at /api/files/<kind>/<application id>. */
+  const documents = application
+    ? (
+        [
+          ["Cover letter", application.cover_letter_path, `/api/files/letter/${application.id}`],
+          ["Tailored CV", application.cv_path, `/api/files/cv/${application.id}`],
+        ] as [string, string, string][]
+      )
+        .filter(([, path]) => Boolean(path))
+        .map(([label, path, href]) => ({ label, path, href }))
+    : [];
 
   const breakdown = job?.score_breakdown ?? {};
   const signals = Object.entries(breakdown.signals ?? {});
@@ -360,23 +374,29 @@ export function JobDrawer({
                       </pre>
                     </Block>
 
-                    {[
-                      ["Cover letter", application.cover_letter_path],
-                      ["Tailored CV", application.cv_path],
-                    ].some(([, path]) => Boolean(path)) ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {[
-                          ["Cover letter", application.cover_letter_path],
-                          ["Tailored CV", application.cv_path],
-                        ]
-                          .filter(([, path]) => Boolean(path))
-                          .map(([label, path]) => (
-                            <Tag key={label} title={path}>
-                              <IconDocument size={11} style={{ color: "var(--ink-tertiary)" }} />
-                              {label}
-                            </Tag>
+                    {/* These were plain tags, so the two documents the drafting
+                        stage had just produced looked like metadata and could
+                        not be opened. The API serves both as PDFs, and the
+                        apply pack was already linking to them, so this tab was
+                        the only place they were dead. */}
+                    {documents.length ? (
+                      <Block title="Attached documents">
+                        <div className="flex flex-wrap gap-2">
+                          {documents.map((document) => (
+                            <a
+                              key={document.label}
+                              href={document.href}
+                              download
+                              className="btn btn-secondary no-underline"
+                              title={`Download ${document.label} (${document.path})`}
+                            >
+                              <IconDocument size={13} style={{ color: "var(--ink-tertiary)" }} />
+                              {document.label}
+                              <IconDownload size={13} style={{ color: "var(--ink-tertiary)" }} />
+                            </a>
                           ))}
-                      </div>
+                        </div>
+                      </Block>
                     ) : null}
                   </div>
                 ) : (

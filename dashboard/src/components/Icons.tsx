@@ -199,6 +199,13 @@ export const IconPlus = (p: IconProps) => (
   </Base>
 );
 
+export const IconDownload = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5" />
+    <path d="M5 19h14" />
+  </Base>
+);
+
 export const IconChevronRight = (p: IconProps) => (
   <Base {...p}>
     <path d="m9.5 5.5 7 6.5-7 6.5" />
