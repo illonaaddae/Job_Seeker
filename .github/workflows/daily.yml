@@ -1,9 +1,20 @@
 name: Daily run
 
-# Discovers new roles, scores them, drafts the best matches, reads the inbox and
-# emails a summary, every weekday morning in Accra. It never sends applications:
-# that stays a decision made in the dashboard, which is the whole point of the
-# approval step.
+# The autonomous loop: discovers new roles, scores them, drafts the best
+# matches, approves the ones that clear AUTO_APPROVE_SCORE, sends them, chases
+# them, reads the inbox and emails a summary. Every weekday morning in Accra.
+#
+# Sending is real here, and four independent gates have to agree before a single
+# email leaves:
+#
+#   1. SEND_ENABLED=true          the master switch, enforced in the mailer
+#   2. AUTO_APPROVE_SCORE > 0     unset means every draft still waits for a human
+#   3. score >= that threshold    and the threshold is above MIN_SCORE_TO_SEND
+#   4. "live": true in the body   without it every send is simulated
+#
+# A draft the style guard was unhappy with is never approved automatically, and
+# DAILY_SEND_CAP still caps the day. Set AUTO_APPROVE_SCORE back to 0 to put the
+# human approval step back without touching this file.
 #
 # Requires a deployed instance:
 #   Repository variable  JOBSEEKER_URL         https://your-app.azurewebsites.net
@@ -18,7 +29,11 @@ on:
     inputs:
       stages:
         description: Stages to run, comma separated
-        default: discover,score,draft,replies,respond,digest
+        default: discover,score,draft,replies,auto_approve,send,followup,respond,digest
+        required: false
+      live:
+        description: Send for real. Leave false to simulate every send.
+        default: "true"
         required: false
 
 jobs:
@@ -30,7 +45,8 @@ jobs:
         env:
           BASE: ${{ vars.JOBSEEKER_URL }}
           TOKEN: ${{ secrets.JOBSEEKER_API_TOKEN }}
-          STAGES: ${{ github.event.inputs.stages || 'discover,score,draft,replies,respond,followup,digest' }}
+          STAGES: ${{ github.event.inputs.stages || 'discover,score,draft,replies,auto_approve,send,followup,respond,digest' }}
+          LIVE: ${{ github.event.inputs.live || 'true' }}
         run: |
           set -euo pipefail
           IFS=',' read -ra LIST <<< "$STAGES"
@@ -40,7 +56,7 @@ jobs:
               -X POST "$BASE/api/run/$stage" \
               -H "Authorization: Bearer $TOKEN" \
               -H "Content-Type: application/json" \
-              -d '{}'
+              -d "{\"live\": $LIVE}"
             echo
             echo "::endgroup::"
           done

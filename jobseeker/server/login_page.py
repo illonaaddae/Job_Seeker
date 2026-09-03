@@ -16,36 +16,38 @@ LOGIN_HTML = """<!doctype html>
 <meta name="color-scheme" content="light dark" />
 <meta name="robots" content="noindex, nofollow" />
 <title>Sign in · JobSeeker</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230E7C86'/><path d='M9 20l4-9 3 6 2-3 5 6' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%235E6AD2'/><path d='M9 20l4-9 3 6 2-3 5 6' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
 <style>
-  /* The same self hosted faces the dashboard uses, so signing in and using the
-     app do not feel like two different products. */
-  @font-face {
-    font-family: "Ysabeau";
-    src: url("/fonts/Ysabeau.woff2") format("woff2");
-    font-weight: 100 1000;
-    font-display: swap;
-  }
+  /* The same self hosted face the dashboard uses, so signing in and using the
+     app do not feel like two different products. One family only: the display
+     face this page used to load was dropped from the design system, and a
+     stylesheet that keeps asking for it ships a 404 on the first screen. */
   @font-face {
     font-family: "Inter var";
     src: url("/fonts/Inter.woff2") format("woff2");
     font-weight: 100 900;
     font-display: swap;
   }
+  /* Dark is the primary theme, so it is the default here and light is the
+     override. These values are the dashboard's own tokens; see DESIGN.md. */
   :root {
-    --canvas: #f2f1ed; --surface: #ffffff; --surface-3: #f0efea;
-    --line: #e4e2db; --ink: #14171a; --muted: #6f7378;
-    --accent: #0e7c86; --accent-ink: #ffffff; --accent-soft: #e3f2f3;
-    --danger: #b91c1c; --danger-soft: #fdeaea;
-    --shadow: 0 1px 2px rgb(16 20 25 / .04), 0 24px 48px -24px rgb(16 20 25 / .22);
+    --canvas: #010102; --surface: #0f1011; --surface-2: #141516; --surface-3: #18191a;
+    --line: #23252a; --line-strong: #34343a;
+    --ink: #f7f8f8; --ink-2: #d0d6e0; --muted: #8a8f98;
+    --accent: #5e6ad2; --accent-hover: #828fff; --accent-focus: #5e69d1; --accent-ink: #ffffff;
+    --danger: #eb5757;
+    --edge: inset 0 1px 0 rgb(255 255 255 / .04);
+    --shadow: 0 6px 12px -6px rgb(0 0 0 / .5), 0 24px 48px -24px rgb(0 0 0 / .8);
   }
-  @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: light) {
     :root {
-      --canvas: #0c0d0f; --surface: #16181b; --surface-3: #212529;
-      --line: #292d32; --ink: #f0efe9; --muted: #85888c;
-      --accent: #2dd4bf; --accent-ink: #04211f; --accent-soft: #10312f;
-      --danger: #f87171; --danger-soft: #2c1516;
-      --shadow: 0 1px 2px rgb(0 0 0 / .5), 0 24px 48px -24px rgb(0 0 0 / .85);
+      --canvas: #f1f2f4; --surface: #ffffff; --surface-2: #f7f8f9; --surface-3: #edeef1;
+      --line: #dcdee3; --line-strong: #c8cbd2;
+      --ink: #131416; --ink-2: #3b3f45; --muted: #64696e;
+      --accent: #5e6ad2; --accent-hover: #4d59c4; --accent-focus: #5e69d1; --accent-ink: #ffffff;
+      --danger: #bf2a2a;
+      --edge: inset 0 1px 0 rgb(255 255 255 / .7);
+      --shadow: 0 6px 12px -6px rgb(16 20 25 / .14), 0 18px 36px -18px rgb(16 20 25 / .22);
     }
   }
   * { box-sizing: border-box; }
@@ -53,62 +55,64 @@ LOGIN_HTML = """<!doctype html>
     margin: 0; min-height: 100vh; display: grid; place-items: center;
     padding: 24px; background: var(--canvas); color: var(--ink);
     font-family: "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.5; letter-spacing: -0.006em;
     -webkit-font-smoothing: antialiased;
   }
-  /* A single quiet accent wash, so the page is not a bare form on a flat field. */
-  body::before {
-    content: ""; position: fixed; inset: 0; pointer-events: none;
-    background: radial-gradient(60rem 30rem at 50% -12rem,
-      color-mix(in oklab, var(--accent) 12%, transparent), transparent 70%);
-  }
+  ::selection { background: color-mix(in oklab, var(--accent) 34%, transparent); color: var(--ink); }
+  * { caret-color: var(--accent); }
+  /* Depth is the surface ladder and a hairline, the way it is everywhere else
+     in this product. No accent wash: the accent is spent on the one action. */
   main {
-    position: relative; width: 100%; max-width: 380px;
+    position: relative; width: 100%; max-width: 360px;
     background: var(--surface); border: 1px solid var(--line);
-    border-radius: 18px; box-shadow: var(--shadow); padding: 28px 26px 24px;
+    border-radius: 12px; box-shadow: var(--shadow), var(--edge); padding: 24px 22px 20px;
   }
   .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
-  .brand h1 {
-    font-family: "Ysabeau", ui-sans-serif, system-ui, sans-serif;
-    font-size: 17px; font-weight: 650; letter-spacing: -0.006em; margin: 0;
-  }
-  .brand p { margin: 2px 0 0; font-size: 11px; color: var(--muted); }
-  h2 {
-    font-family: "Ysabeau", ui-sans-serif, system-ui, sans-serif;
-    font-size: 23px; font-weight: 650; letter-spacing: -0.006em; margin: 0 0 6px;
-  }
-  .lede { margin: 0 0 20px; font-size: 12.5px; line-height: 1.55; color: var(--muted); }
-  label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .05em;
-          text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .brand h1 { font-size: 14px; font-weight: 600; letter-spacing: -0.018em; margin: 0; }
+  .brand p { margin: 1px 0 0; font-size: 11px; color: var(--muted); }
+  h2 { font-size: 22px; font-weight: 620; letter-spacing: -0.021em; margin: 0 0 6px; }
+  .lede { margin: 0 0 20px; font-size: 13px; line-height: 1.55; color: var(--muted); }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 6px; }
   .field { position: relative; display: flex; align-items: center; }
   .reveal {
-    position: absolute; right: 6px; width: 32px; height: 32px; padding: 0;
+    position: absolute; right: 4px; width: 28px; height: 28px; padding: 0;
     display: grid; place-items: center; margin: 0;
     background: transparent; border: 0; border-radius: 8px;
     color: var(--muted); cursor: pointer;
   }
   .reveal:hover { color: var(--ink); background: var(--surface-3); }
   input {
-    width: 100%; height: 44px; padding: 0 42px 0 12px; font-size: 15px; color: var(--ink);
-    background: var(--surface-3); border: 1px solid var(--line);
-    border-radius: 11px; outline: none; transition: border-color .12s, box-shadow .12s;
+    width: 100%; height: 36px; padding: 0 38px 0 10px; font-size: 14px; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 8px; outline: none; transition: border-color .14s;
   }
-  input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+  input::placeholder { color: var(--muted); }
+  input:hover { border-color: var(--line-strong); }
+  /* The one focus treatment this product uses: a 2px accent ring at half
+     strength, following the element's own corners. */
+  input:focus, button:focus-visible, .reveal:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--accent-focus) 55%, transparent);
+    outline-offset: 1px; border-color: var(--line-strong);
   }
-  button {
-    font-family: "Ysabeau", ui-sans-serif, system-ui, sans-serif;
-    font-weight: 650;
-    width: 100%; height: 42px; margin-top: 14px; border: 0; border-radius: 11px;
-    background: var(--accent); color: var(--accent-ink);
-    font-size: 14px; font-weight: 600; cursor: pointer; transition: filter .12s;
+  button[type="submit"] {
+    width: 100%; min-height: 32px; margin-top: 14px; border: 1px solid transparent;
+    border-radius: 8px; background: var(--accent); color: var(--accent-ink);
+    font-family: inherit; font-size: 13px; font-weight: 510; cursor: pointer;
+    transition: background-color .14s;
   }
-  button:hover:not(:disabled) { filter: brightness(1.07); }
-  button:disabled { opacity: .55; cursor: not-allowed; }
+  button[type="submit"]:hover:not(:disabled) { background: var(--accent-hover); }
+  button[type="submit"]:active:not(:disabled) { background: var(--accent-focus); }
+  /* Desaturate rather than fade: a faded label falls below readable contrast. */
+  button[type="submit"]:disabled {
+    background: var(--surface-3); color: var(--muted); cursor: not-allowed;
+  }
+  /* A hairline in the danger hue, not a filled block: the same alert grammar
+     the dashboard uses. */
   .error {
-    display: none; margin-top: 14px; padding: 9px 11px; border-radius: 10px;
-    background: var(--danger-soft); color: var(--danger);
-    font-size: 12.5px; line-height: 1.45;
+    display: none; margin-top: 14px; padding: 8px 10px; border-radius: 8px;
+    background: var(--surface-2);
+    border: 1px solid color-mix(in oklab, var(--danger) 40%, var(--line));
+    color: var(--ink-2); font-size: 13px; line-height: 1.45;
   }
   .error.show { display: block; }
   .foot { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
@@ -119,8 +123,8 @@ LOGIN_HTML = """<!doctype html>
 <body>
 <main>
   <div class="brand">
-    <svg class="logo" width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <rect width="32" height="32" rx="9" fill="var(--accent)" />
+    <svg class="logo" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="var(--accent)" />
       <path d="M8.5 20.5 12.5 11l3.2 6.2 2.1-3.1 5.7 6.4" stroke="var(--accent-ink)"
             stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
