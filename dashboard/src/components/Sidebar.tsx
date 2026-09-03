@@ -56,10 +56,11 @@ export function Sidebar({
   const identity = profile?.identity ?? {};
 
   return (
-    <aside
-      className="sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col justify-between border-r px-3 py-4 lg:flex"
+    <div
+      className="hidden w-[248px] shrink-0 border-r lg:block"
       style={{ background: "var(--surface)", borderColor: "var(--line)" }}
     >
+      <aside className="sticky top-0 flex h-screen flex-col justify-between px-3 py-4">
       <div className="min-w-0">
         <div className="mb-6 flex items-center gap-2.5 px-2">
           <IconLogo size={26} />
@@ -236,8 +237,9 @@ export function Sidebar({
             </button>
           ) : null}
         </div>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </div>
   );
 }
 

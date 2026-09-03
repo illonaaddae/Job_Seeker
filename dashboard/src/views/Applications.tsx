@@ -29,20 +29,22 @@ export function Applications({
   }));
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="scroll-x -my-0.5 max-w-full py-0.5">
-        <div className="w-max">
-          <Segmented
-            options={options}
-            value={filter}
-            onChange={onFilter}
-            label="Application filter"
-          />
+    <div>
+      <div className="region px-4 py-2 lg:px-6">
+        <div className="scroll-x -my-0.5 max-w-full py-0.5">
+          <div className="w-max">
+            <Segmented
+              options={options}
+              value={filter}
+              onChange={onFilter}
+              label="Application filter"
+            />
+          </div>
         </div>
       </div>
 
       {!applications.length ? (
-        <div className="panel">
+        <div>
           <EmptyState
             icon={<IconSend size={16} />}
             title={`Nothing is ${filter || "here"}`}
@@ -55,9 +57,9 @@ export function Applications({
           />
         </div>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul>
           {applications.map((application) => (
-            <li key={application.id} className="panel p-3.5">
+            <li key={application.id} className="region row px-4 py-3 lg:px-6">
               <div className="flex flex-wrap items-start gap-3">
                 <CompanyMark name={application.job?.company_name ?? "?"} size={30} />
 

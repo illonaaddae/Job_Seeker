@@ -6,7 +6,7 @@
  * between "configured" and "not" into something visible.
  */
 import { IconCheck, IconBolt } from "./Icons";
-import { SectionTitle } from "./Primitives";
+
 import type { ReadinessCheck } from "../types";
 
 export function Readiness({ checks }: { checks: ReadinessCheck[] }) {
@@ -15,8 +15,11 @@ export function Readiness({ checks }: { checks: ReadinessCheck[] }) {
 
   if (!outstanding.length) {
     return (
-      <section className="panel p-4">
-        <SectionTitle title="Setup" subtitle="Everything the engine needs is configured" />
+      <section>
+        <h2 className="text-ink">Setup</h2>
+        <p className="mb-3 mt-0.5 text-label text-muted">
+          Everything the engine needs is configured
+        </p>
         <p className="flex items-center gap-2 text-[0.8125rem]" style={{ color: "var(--st-green)" }}>
           <IconCheck size={14} />
           Fully armed. Applications can be found, written and sent.
@@ -26,11 +29,12 @@ export function Readiness({ checks }: { checks: ReadinessCheck[] }) {
   }
 
   return (
-    <section className="panel p-4">
-      <SectionTitle
-        title="Setup"
-        subtitle={`${outstanding.length} thing${outstanding.length === 1 ? "" : "s"} still limiting what runs without you`}
-      />
+    <section>
+      <h2 className="text-ink">Setup</h2>
+      <p className="mb-3 mt-0.5 text-label leading-snug text-muted">
+        {outstanding.length} thing{outstanding.length === 1 ? "" : "s"} still limiting what runs
+        without you
+      </p>
       <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
         {checks.map((check) => (
           <li key={check.key} className="flex items-start gap-2.5">

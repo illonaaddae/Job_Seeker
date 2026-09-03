@@ -6,7 +6,7 @@ import type { Reply } from "../types";
 export function Replies({ replies }: { replies: Reply[] }) {
   if (!replies.length) {
     return (
-      <div className="panel">
+      <div>
         <EmptyState
           icon={<IconInbox size={16} />}
           title="No replies read yet"
@@ -17,9 +17,9 @@ export function Replies({ replies }: { replies: Reply[] }) {
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul>
       {replies.map((reply) => (
-        <li key={reply.id} className="panel p-3.5">
+        <li key={reply.id} className="region px-4 py-3 lg:px-6">
           <div className="flex flex-wrap items-center gap-2">
             <StatusTag status={reply.classification} />
             <span className="text-[0.8125rem] font-medium text-ink">{reply.from_addr}</span>

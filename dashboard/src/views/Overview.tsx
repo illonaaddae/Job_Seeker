@@ -1,17 +1,32 @@
+/**
+ * The Overview.
+ *
+ * Composition note, because this changed twice.
+ *
+ * It was four identical stat cards over a chart, which is the category default
+ * and says nothing: the pipeline figures are not peers, each one is a survivor
+ * of the one before it. So they became a funnel.
+ *
+ * Then it was six rounded panels floating in a padded grid, which is the other
+ * category default. Card chrome doubled every border, spent the gutter twice,
+ * and on a phone left about a third of the viewport to padding. Now the page is
+ * one continuous surface: full bleed regions divided by hairlines, with the
+ * secondary column held by a single vertical rule rather than by three more
+ * boxes. The queue is the protagonist and sits directly under the funnel.
+ */
 import { AreaChart } from "../components/Charts";
 import { ActivityFeed, FollowupList } from "../components/ActivityFeed";
 import { Funnel } from "../components/Funnel";
 import { JobsTable } from "../components/JobsTable";
 import { Readiness } from "../components/Readiness";
-import { SectionTitle } from "../components/Primitives";
 import { IconArrowRight } from "../components/Icons";
 import { percent } from "../lib/format";
 import type { ActivityEvent, Job, PendingFollowup, Profile, Stats } from "../types";
 
 /**
  * One sentence saying what is actually waiting, so the top of the page answers
- * "what should I do now" rather than restating figures that are already on
- * screen a few pixels below.
+ * "what should I do now" rather than restating figures that are on screen a few
+ * pixels below.
  */
 function nextAction(stats: Stats | null): { text: string; target?: [string, string] } {
   if (!stats) return { text: "Loading your pipeline." };
@@ -40,6 +55,27 @@ function nextAction(stats: Stats | null): { text: string; target?: [string, stri
   return { text: "Run discover to pull today's openings." };
 }
 
+/** A heading inside a region. No card, no kicker. */
+function RegionHead({
+  title,
+  meta,
+  action,
+}: {
+  title: string;
+  meta?: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="mb-3 flex items-start justify-between gap-4">
+      <div className="min-w-0">
+        <h2 className="text-ink">{title}</h2>
+        {meta ? <p className="mt-0.5 text-label leading-snug text-muted">{meta}</p> : null}
+      </div>
+      {action ? <div className="shrink-0">{action}</div> : null}
+    </div>
+  );
+}
+
 export function Overview({
   stats,
   jobs,
@@ -64,17 +100,13 @@ export function Overview({
   const thisWeek = sends.slice(-7).reduce((total, day) => total + day.n, 0);
   const lastWeek = sends.slice(-14, -7).reduce((total, day) => total + day.n, 0);
   const action = nextAction(stats);
+  const outstanding = (profile?.readiness ?? []).some((check) => !check.ready);
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* The funnel and the one sentence above it are the page's thesis. The
-          panel is flush so the six stages read as one object divided by
-          hairlines, not as six cards. */}
-      <section className="panel-flush order-1">
-        <div
-          className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b px-4 py-3.5"
-          style={{ borderColor: "var(--line)" }}
-        >
+    <div>
+      {/* The one sentence and the funnel are the page's thesis. */}
+      <section className="region px-4 py-3 lg:px-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 className="text-ink">
             {firstName ? `${firstName}, ` : ""}
             <span className="font-normal text-ink-2">{action.text}</span>
@@ -92,73 +124,76 @@ export function Overview({
             </button>
           ) : null}
         </div>
-
-        <div style={{ background: "var(--line)" }}>
-          <Funnel stats={stats} onNavigate={onNavigate} />
-        </div>
       </section>
 
-      <section className="order-4 grid items-start gap-4 xl:order-2 xl:grid-cols-[1.7fr_1fr]">
-        <div className="panel p-4">
-          <SectionTitle
-            title="Sending rhythm"
-            subtitle={
-              sends.length
-                ? `${thisWeek} sent this week against ${lastWeek} last week · ${percent(stats?.reply_rate ?? 0, 1)} reply rate`
-                : "Applications per day over the last 30 days"
-            }
-          />
-          <AreaChart points={sends.map((day) => ({ label: day.day, value: day.n }))} />
-        </div>
-
-        <div className="panel p-4">
-          <SectionTitle title="Follow ups due" subtitle="Sent into the original thread" />
-          <FollowupList
-            followups={followups}
-            onSelect={(jobId) => {
-              const job = jobs.find((candidate) => candidate.id === jobId);
-              if (job) onSelect(job);
-              else onNavigate("applications", "sent");
-            }}
-          />
-        </div>
+      {/* The hairline grid gap draws the divisions between stages. */}
+      <section className="region" style={{ background: "var(--line)" }}>
+        <Funnel stats={stats} onNavigate={onNavigate} />
       </section>
 
-      {(profile?.readiness ?? []).some((check) => !check.ready) ? (
-        <div className="order-3">
-          <Readiness checks={profile?.readiness ?? []} />
-        </div>
-      ) : null}
-
-      <section className="order-2 grid items-start gap-4 xl:order-4 xl:grid-cols-[1.7fr_1fr]">
-        <div className="panel-flush">
-          <div
-            className="flex items-center justify-between border-b px-4 py-3"
-            style={{ borderColor: "var(--line)" }}
-          >
-            <div>
-              <h2 className="text-ink">Best matches right now</h2>
-              <p className="mt-0.5 text-label text-muted">
-                Ranked by how well they fit your profile
-              </p>
+      <div className="xl:flex xl:items-stretch">
+        <div className="min-w-0 xl:flex-1">
+          {/* The queue is the protagonist, so it comes first and runs to the
+              edges of its column. */}
+          <section className="region">
+            <div className="px-4 pb-1 pt-3.5 lg:px-6">
+              <RegionHead
+                title="Best matches right now"
+                meta="Ranked by how well they fit your profile"
+                action={
+                  <button
+                    type="button"
+                    className="btn btn-quiet btn-sm"
+                    onClick={() => onNavigate("jobs", "shortlist")}
+                  >
+                    All matches
+                    <IconArrowRight size={12} />
+                  </button>
+                }
+              />
             </div>
-            <button
-              type="button"
-              className="btn btn-quiet btn-sm"
-              onClick={() => onNavigate("jobs", "shortlist")}
-            >
-              All matches
-              <IconArrowRight size={12} />
-            </button>
-          </div>
-          <JobsTable jobs={jobs.slice(0, 7)} loading={loading} onSelect={onSelect} compact />
+            <JobsTable jobs={jobs.slice(0, 8)} loading={loading} onSelect={onSelect} compact />
+          </section>
+
+          {outstanding ? (
+            <section className="region region-pad">
+              <Readiness checks={profile?.readiness ?? []} />
+            </section>
+          ) : null}
+
+          <section className="region region-pad">
+            <RegionHead
+              title="Sending rhythm"
+              meta={
+                sends.length
+                  ? `${thisWeek} sent this week against ${lastWeek} last week · ${percent(stats?.reply_rate ?? 0, 1)} reply rate`
+                  : "Applications per day over the last 30 days"
+              }
+            />
+            <AreaChart points={sends.map((day) => ({ label: day.day, value: day.n }))} />
+          </section>
         </div>
 
-        <div className="panel p-4">
-          <SectionTitle title="Recent activity" subtitle="Every stage you run is logged" />
-          <ActivityFeed events={events.slice(0, 7)} />
-        </div>
-      </section>
+        {/* Secondary column. One vertical hairline, not three more panels. */}
+        <aside className="rail shrink-0 xl:w-[21rem]">
+          <section className="region region-pad">
+            <RegionHead title="Follow ups due" meta="Sent into the original thread" />
+            <FollowupList
+              followups={followups}
+              onSelect={(jobId) => {
+                const job = jobs.find((candidate) => candidate.id === jobId);
+                if (job) onSelect(job);
+                else onNavigate("applications", "sent");
+              }}
+            />
+          </section>
+
+          <section className="region-pad">
+            <RegionHead title="Recent activity" meta="Every stage you run is logged" />
+            <ActivityFeed events={events.slice(0, 6)} />
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }

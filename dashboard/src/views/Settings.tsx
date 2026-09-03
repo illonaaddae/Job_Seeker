@@ -74,7 +74,7 @@ function PasswordCard({ session }: { session: SessionState | null }) {
   }
 
   return (
-    <section className="panel p-4">
+    <section className="region region-pad">
       <SectionTitle
         title="Sign in password"
         subtitle={
@@ -178,13 +178,13 @@ export function Settings({
     .map(([label, value]) => [label, value]);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
-      <section className="panel p-4">
+    <div className="grid xl:grid-cols-2 xl:[&>*:nth-child(odd)]:border-r">
+      <section className="region region-pad">
         <SectionTitle title="Who this engine writes as" subtitle="Loaded from your profile file" />
         <Facts rows={identityRows} labelWidth="5.5rem" />
       </section>
 
-      <section className="panel p-4">
+      <section className="region region-pad">
         <SectionTitle
           title="Guardrails"
           subtitle="Nothing sends until every one of these passes"
@@ -206,7 +206,7 @@ export function Settings({
         </p>
       </section>
 
-      <section className="panel flex flex-col gap-4 p-4">
+      <section className="region region-pad flex flex-col gap-4">
         <SectionTitle title="Target roles" subtitle="What counts as a match" />
         <TagGroup label="Looking for" items={(targeting.roles as string[] | undefined) ?? []} />
         <TagGroup
@@ -215,7 +215,7 @@ export function Settings({
         />
       </section>
 
-      <section className="panel flex flex-col gap-4 p-4">
+      <section className="region region-pad flex flex-col gap-4">
         <SectionTitle
           title="Skills the scorer looks for"
           subtitle="Core skills weigh heaviest in the match"
@@ -228,7 +228,7 @@ export function Settings({
         <PasswordCard session={session} />
       </div>
 
-      <section className="panel p-4 xl:col-span-2">
+      <section className="region region-pad xl:col-span-2">
         <SectionTitle
           title="API access"
           subtitle="Required when the API is not on localhost. Stored in this browser only."

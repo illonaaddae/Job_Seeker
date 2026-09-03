@@ -53,7 +53,7 @@ function JobCard({
       type="button"
       onClick={() => onSelect(job)}
       aria-label={rowLabel(job)}
-      className={`flex w-full flex-col gap-2 border-t px-4 py-3 text-left ${
+      className={`flex w-full flex-col gap-2 border-t px-4 py-3 text-left lg:px-6 ${
         selected ? "row-current" : "row"
       }`}
       style={{ borderColor: "var(--line)" }}
@@ -121,7 +121,7 @@ export function JobsTable({
         {Array.from({ length: compact ? 5 : 8 }).map((_, index) => (
           <div
             key={index}
-            className="flex items-center gap-3 border-t px-4"
+            className="flex items-center gap-3 border-t px-4 lg:px-6"
             style={{ borderColor: "var(--line)", height: 52 }}
           >
             <Skeleton className="h-4 w-7" />
@@ -161,7 +161,7 @@ export function JobsTable({
       {/* Everything wide enough to hold the real columns. */}
       <table className="hidden w-full table-fixed border-collapse text-left md:table">
         <colgroup>
-          <col style={{ width: "3.5rem" }} />
+          <col style={{ width: "4.25rem" }} />
           <col />
           {!compact ? <col style={{ width: "12rem" }} /> : null}
           <col style={{ width: "7rem" }} />
@@ -172,13 +172,13 @@ export function JobsTable({
 
         <thead>
           <tr>
-            <th className="th px-4 pb-2 pt-1 text-left">Match</th>
-            <th className="th pb-2 pl-1 pr-2 pt-1 text-left">Role</th>
+            <th className="th pb-2 pl-4 pr-2 pt-1 text-left lg:pl-6">Match</th>
+            <th className="th pb-2 pl-2 pr-2 pt-1 text-left">Role</th>
             {!compact ? <th className="th px-2 pb-2 pt-1 text-left">Location</th> : null}
             <th className="th px-2 pb-2 pt-1 text-left">Status</th>
             {!compact ? <th className="th px-2 pb-2 pt-1 text-left">Source</th> : null}
             <th className="th px-2 pb-2 pt-1 text-right">Age</th>
-            <th className="pb-2 pr-3 pt-1" />
+            <th className="pb-2 pr-4 pt-1 lg:pr-6" />
           </tr>
         </thead>
 
@@ -202,11 +202,11 @@ export function JobsTable({
                 className={`group cursor-pointer border-t ${isSelected ? "row-current" : "row"}`}
                 style={{ borderColor: "var(--line)" }}
               >
-                <td className="px-4 py-2.5">
+                <td className="py-2.5 pl-4 pr-2 lg:pl-6">
                   <Score value={job.score} />
                 </td>
 
-                <td className="py-2.5 pl-1 pr-2">
+                <td className="py-2.5 pl-2 pr-2">
                   <div className="flex items-center gap-2.5">
                     <CompanyMark name={job.company_name} size={24} />
                     <div className="min-w-0 leading-tight">
@@ -251,7 +251,7 @@ export function JobsTable({
                   {compactTime(job.discovered_at)}
                 </td>
 
-                <td className="pr-3">
+                <td className="pr-4 lg:pr-6">
                   <IconChevronRight
                     size={14}
                     className="opacity-0 transition-opacity group-hover:opacity-100"

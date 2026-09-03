@@ -319,6 +319,40 @@
 }
 
 @layer components {
+  /* --- regions ------------------------------------------------------------ */
+
+  /* The page is one continuous surface divided by hairlines, not a tray of
+     floating cards.
+
+     The first cut of this dashboard was six rounded panels on a flat field,
+     which is the templated look every generated dashboard has: card chrome
+     doubles every border, eats the outer gutter twice, and on a phone left
+     about a third of the viewport to padding. The source system's marketing
+     pages use cards; its product does not, and this is the product. Elevation
+     is reserved for things that genuinely float (`.pop`). */
+  .region {
+    border-bottom: 1px solid var(--line);
+  }
+  .region-pad {
+    padding: 1rem;
+  }
+  @media (min-width: 1024px) {
+    .region-pad {
+      padding: 1.25rem 1.5rem;
+    }
+  }
+
+  /* The secondary column on wide screens. A hairline, not a card. */
+  .rail {
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 1280px) {
+    .rail {
+      border-top: 0;
+      border-left: 1px solid var(--line);
+    }
+  }
+
   /* --- containers --------------------------------------------------------- */
 
   /* A panel is a step up the ladder plus a hairline. No shadow: the lift is

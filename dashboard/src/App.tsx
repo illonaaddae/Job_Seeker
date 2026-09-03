@@ -263,7 +263,7 @@ export default function App() {
           stats={stats}
         />
 
-        <main className="flex-1 px-4 py-4 lg:px-6">
+        <main className="min-w-0 flex-1">
           {view === "overview" ? (
             <Overview
               stats={stats}
