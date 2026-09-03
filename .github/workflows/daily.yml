@@ -21,18 +21,23 @@ name: Daily run
 #   Repository secret    JOBSEEKER_API_TOKEN   the API token from the deploy
 #
 # Without them this skips rather than failing every morning.
+#
+# NOTE ON THE API CONTRACT. `POST /api/run/<stage>` starts a background task and
+# returns immediately with status "running", and the server holds a single task
+# lock, so a second stage posted straight after gets 409 Conflict. An earlier
+# version of this workflow looped over a stage list posting one after another,
+# and it died on the second request every single morning. The engine already
+# exposes the whole ordered cycle as one stage, `daily`, which is what
+# `run_daily()` exists for, so this posts that once and then polls until it is
+# done.
 
 on:
   schedule:
     - cron: "0 6 * * 1-5" # 06:00 UTC, which is 06:00 in Ghana
   workflow_dispatch:
     inputs:
-      stages:
-        description: Stages to run, comma separated
-        default: discover,score,draft,replies,auto_approve,send,followup,respond,digest
-        required: false
       live:
-        description: Send for real. Leave false to simulate every send.
+        description: Send for real. Set to false to simulate every send.
         default: "true"
         required: false
 
@@ -41,35 +46,82 @@ jobs:
     runs-on: ubuntu-latest
     if: vars.JOBSEEKER_URL != ''
     steps:
-      - name: Run each stage against the deployed API
+      - name: Run the daily cycle and wait for it
         env:
           BASE: ${{ vars.JOBSEEKER_URL }}
           TOKEN: ${{ secrets.JOBSEEKER_API_TOKEN }}
-          STAGES: ${{ github.event.inputs.stages || 'discover,score,draft,replies,auto_approve,send,followup,respond,digest' }}
           LIVE: ${{ github.event.inputs.live || 'true' }}
         run: |
           set -euo pipefail
-          IFS=',' read -ra LIST <<< "$STAGES"
-          for stage in "${LIST[@]}"; do
-            echo "::group::$stage"
-            curl --fail --show-error --silent --max-time 900 \
-              -X POST "$BASE/api/run/$stage" \
-              -H "Authorization: Bearer $TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "{\"live\": $LIVE}"
-            echo
-            echo "::endgroup::"
+          auth="Authorization: Bearer $TOKEN"
+
+          echo "Starting the daily cycle (live=$LIVE)"
+          curl --fail --show-error --silent --max-time 60 \
+            -X POST "$BASE/api/run/daily" \
+            -H "$auth" -H "Content-Type: application/json" \
+            -d "{\"live\": $LIVE}"
+          echo
+
+          # The cycle sweeps every board, scores, drafts with an LLM and talks
+          # to SMTP and IMAP, so it can legitimately take a long time.
+          deadline=$(( $(date +%s) + 2400 ))
+          while :; do
+            sleep 20
+            curl --fail --show-error --silent --max-time 60 \
+              "$BASE/api/run/status" -H "$auth" > status.json
+            state=$(python3 -c 'import json;print(json.load(open("status.json")).get("status",""))')
+
+            if [ "$state" != "running" ]; then
+              echo "Finished with status: $state"
+              break
+            fi
+            if [ "$(date +%s)" -ge "$deadline" ]; then
+              echo "::error::The daily cycle did not finish within 40 minutes."
+              exit 1
+            fi
+            echo "still running..."
           done
 
-      - name: Summarise the funnel
+          if [ "$state" = "failed" ]; then
+            python3 -c 'import json;print("::error::"+(json.load(open("status.json")).get("error") or "the cycle failed with no detail"))'
+            exit 1
+          fi
+
+      - name: Summarise what it did
+        if: always()
         env:
           BASE: ${{ vars.JOBSEEKER_URL }}
           TOKEN: ${{ secrets.JOBSEEKER_API_TOKEN }}
         run: |
           set -euo pipefail
+
+          if [ -f status.json ]; then
+            python3 >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json
+
+          with open("status.json", encoding="utf-8") as handle:
+              task = json.load(handle)
+
+          print("## What the daily run did")
+          print()
+          stages = (task.get("result") or {}).get("items") or []
+          if stages:
+              print("| Stage | Counts |")
+              print("|---|---|")
+              for stage in stages:
+                  counts = stage.get("counts") or {}
+                  pretty = ", ".join(f"{v} {k}" for k, v in counts.items()) or "nothing to do"
+                  print(f"| {stage.get('stage', '?')} | {pretty} |")
+              print()
+              for stage in stages:
+                  for message in (stage.get("messages") or [])[:3]:
+                      print(f"- {stage.get('stage', '?')}: {message}")
+          PY
+          fi
+
           curl --fail --silent "$BASE/api/stats" \
             -H "Authorization: Bearer $TOKEN" > stats.json
-          python3 <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          python3 >> "$GITHUB_STEP_SUMMARY" <<'PY'
           import json
 
           with open("stats.json", encoding="utf-8") as handle:
@@ -78,12 +130,16 @@ jobs:
           by_job = stats.get("jobs_by_status", {})
           by_application = stats.get("applications_by_status", {})
 
-          print("## JobSeeker funnel")
+          print()
+          print("## Funnel now")
           print()
           print(f"- Roles tracked: {stats.get('jobs_total', 0)}")
           print(f"- Shortlisted: {by_job.get('shortlisted', 0)}")
           print(f"- Drafts waiting for approval: {by_application.get('draft', 0)}")
+          print(f"- Approved and queued: {by_application.get('approved', 0)}")
           print(f"- Sent: {stats.get('sent', 0)}")
           print(f"- Replies: {stats.get('replied', 0)}")
           print(f"- Interviews and offers: {stats.get('positive', 0)}")
+          print(f"- Sent today: {stats.get('sent_today', 0)} of {stats.get('daily_cap', 0)}")
+          print(f"- Live sending: {'on' if stats.get('send_enabled') else 'off (dry run)'}")
           PY
